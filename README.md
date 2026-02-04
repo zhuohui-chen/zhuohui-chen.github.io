@@ -3,6 +3,38 @@
 
 ![Academic Pages template example](images/themes/homepage-light.png "Academic Pages template example")
 
+# Local Maintainence on MacOS
+1. Install homebrew
+2. Install rbenv to avoid version conflict of native ruby version on macos. Appends a line to ~/.zshrc to make sure rbenv is always initialized. Install other packages.
+```bash
+brew install rbenv ruby-build node
+echo 'eval "$(rbenv init - zsh)"' >> ~/.zshrc
+source ~/.zshrc
+```
+3. GitHub Pages/Jekyll works much better with Ruby 3.3 than Ruby 4.0.
+```bash
+rbenv install 3.3.6
+```
+4. cd into the repository and force it to use ruby 3.3.6. This will persist
+```bash
+cd ~/Desktop/github_personal_page/zhuohui-chen.github.io
+rbenv local 3.3.6
+which ruby
+ruby -v
+```
+5. Install bundler. It’s per Ruby version
+```bash
+gem install bundler
+```
+6. Install project dependencies. It’s per project/folder
+```bash
+bundle install
+```
+7. Examine locally. No need to configure the previous step anymore. rbenv local 3.3.6 will persist in the project once configure
+```bash
+bundle exec jekyll serve
+```
+
 # Getting Started
 
 1. Register a GitHub account if you don't have one and confirm your e-mail (required!)
