@@ -30,7 +30,7 @@ gem install bundler
 ```bash
 bundle install
 ```
-7. Examine locally. No need to configure the previous step anymore. rbenv local 3.3.6 will persist in the project once configure
+7. Examine locally. No need to configure the previous step anymore. rbenv local 3.3.6 will persist in the project once configure. ctrl-c to stop
 ```bash
 bundle exec jekyll serve
 ```

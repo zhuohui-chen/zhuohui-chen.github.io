@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-site_theme               : "default" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
+site_theme               : "air" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
 title                    : "Zhuohui Jerry Chen"
 title_separator          : "-"
 name                     : &name "Zhuohui Jerry Chen"
@@ -23,8 +23,8 @@ repository               : "zhuohui-chen/zhuohui-chen.github.io"
 #               Additional customization can be done by editing /_includes/author-profile.html
 author:
   # Biographic information
-  avatar           : "profile.png"
-  name             : "Your Sidebar Name"
+  avatar           : "zhuohui_photo.jpg"
+  name             : "Zhuohui Jerry Chen"
   pronouns         : "he/him"  
   bio              : "PhD Student in Info Sci"
   location         : "College Park, MD, USA"
