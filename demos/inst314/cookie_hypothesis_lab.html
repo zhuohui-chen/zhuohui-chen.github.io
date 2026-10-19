@@ -205,6 +205,29 @@ footer svg.ck{width:34px;height:34px}
 .recap .mid{display:grid;place-items:center;text-align:center;font-weight:800;font-size:13px;color:var(--muted);gap:4px;width:110px}
 .recap .mid .one{display:grid;place-items:center;width:64px;height:64px;border-radius:999px;background:var(--gold);border:2px solid var(--ink);font-size:30px}
 @media (max-width:820px){.recap .mid{transform:none;width:auto;grid-auto-flow:column}}
+.mo{display:inline-block;background:#B7791F;color:#fff;font-size:11px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 9px;vertical-align:3px;margin-left:6px;white-space:nowrap}
+.mowarn{display:flex;gap:10px;align-items:flex-start;background:#FFF4DC;border:2px solid #B7791F;border-radius:10px;padding:8px 12px;margin:8px 0 0;font-size:14px}
+.mowarn b.t{color:#8A5A12}
+.propw{margin-top:16px;border:3px solid #B7791F;border-radius:14px;background:#FFFBF2;padding:12px 16px}
+.propw>h3{margin:0 0 4px;font-size:19px;color:#8A5A12}
+.propCtl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 18px;margin:8px 0}
+@media (max-width:820px){.propCtl{grid-template-columns:minmax(0,1fr)}}
+.propCtl label{display:flex;justify-content:space-between;gap:10px;font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.propCtl label span{color:var(--ink);font-variant-numeric:tabular-nums;text-transform:none}
+.propCtl input[type=range]{width:100%;accent-color:#B7791F}
+.chip.dis{border-color:#B7791F;color:#8A5A12;background:#FFE9B8}
+.propTab{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;margin-top:8px}
+.propTab th,.propTab td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left}
+.propTab th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.rot{margin-top:12px;border:2.5px solid var(--ink);border-radius:12px;background:#fff;padding:12px 14px}
+.rot>h3{margin:0 0 6px;font-size:17px}
+.rot ol{margin:0;padding-left:0;list-style:none;display:grid;gap:8px}
+.rot li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px}
+.rot .st{display:grid;place-items:center;width:26px;height:26px;border-radius:999px;color:#fff;font-weight:900;font-size:13px}
+.rot .st.ok{background:var(--keep)} .rot .st.warn{background:#B7791F} .rot .st.bad{background:var(--rej)} .rot .st.info{background:#8C8378}
+.rot .live{display:block;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;color:var(--muted);margin-top:2px}
+.rotV{margin-top:10px;border-radius:10px;padding:9px 12px;font-weight:800;font-size:15px;border:2px solid}
+.rotV.ok{background:#E3F2E8;border-color:var(--keep);color:#1F5A37}.rotV.warn{background:#FFE9B8;border-color:#B7791F;color:#6B4510}.rotV.bad{background:#F8E1DE;border-color:var(--rej);color:#7A2219}
 </style>
 </head>
 <body>
@@ -256,7 +279,7 @@ footer svg.ck{width:34px;height:34px}
       <p><b>Almost.</b> x̄ is the same number either way, and it is always both an estimate of μ <i>and</i> a random observation. What changes is the question we ask of it:</p>
       <p><b>Estimation</b> asks what x̄ tells us about μ, and reports x̄ ± z*·SE.</p>
       <p><b>Testing</b> fixes a hypothesized value μ₀ and treats x̄ as the observed value of a random variable, then asks how unusual it is under H₀: z = (x̄ − μ₀)/SE and its p-value.</p>
-      <p>Both use the same sampling distribution and the same SE, which is why a two-sided test at level α and a (1 − α) CI always agree (Step 3 shows this).</p></div>
+      <p>Both use the same sampling distribution and the same SE, which is why, <b>for a mean</b>, a two-sided test at level α and a (1 − α) CI always agree (Step 3 shows this). For a proportion the two use different SEs and can disagree in borderline cases (Step 3, the ⚠️ box).</p></div>
   </section>
 
   <!-- STEP 1 -->
@@ -342,7 +365,7 @@ footer svg.ck{width:34px;height:34px}
   <section class="card" aria-labelledby="h-three">
     <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 3 · Three ways to weigh the evidence</div>
     <h2 id="h-three">p-value, critical value, confidence interval: three judges, one verdict</h2>
-    <div class="story"><span class="ico" aria-hidden="true">👩‍⚖️</span><div><p>Imagine three judges looking at the same evidence. The first two start from “suppose Crumble is honest” and ask whether our group looks too far off. One measures it as a <b>rarity</b> (how often luck does this), the other as a <b>distance</b> (is it past the line we drew in advance). The third judge starts from the evidence instead and asks: <b>“which claims could an honest manager have made, given what we saw?”</b> They always reach the same verdict, and this step shows why.</p></div></div>
+    <div class="story"><span class="ico" aria-hidden="true">👩‍⚖️</span><div><p>Imagine three judges looking at the same evidence. The first two start from “suppose Crumble is honest” and ask whether our group looks too far off. One measures it as a <b>rarity</b> (how often luck does this), the other as a <b>distance</b> (is it past the line we drew in advance). The third judge starts from the evidence instead and asks: <b>“which claims could an honest manager have made, given what we saw?”</b> For a <b>mean</b> they always reach the same verdict, and this step shows why. <span class="mo">Mean only</span> For a <b>proportion</b>, the third judge can occasionally disagree in borderline cases; the ⚠️ box near the end of this step shows why.</p></div></div>
     <p class="sub">All charts share the same cookie axis. <b>Methods 1 and 2 are the same test</b>: both draw the curve H₀ predicts for x̄ (centered at the claim μ₀) and ask whether our x̄ is too far out. Method 1 judges that by an <b>area</b>, Method 2 by a <b>position</b>. Method 3 flips the viewpoint and centers the curve on <b>our x̄</b>. <span id="godLegendTxt">The gold dotted line is the true μ, from God’s view.</span></p>
     <div class="views">
       <div class="pair">
@@ -387,7 +410,8 @@ footer svg.ck{width:34px;height:34px}
     </div>
     <div class="narr" id="sameGap"></div>
     <div class="twin" id="twin">
-      <h3>Same distance, two viewpoints: why the test and the CI can’t disagree</h3>
+      <h3>Same distance, two viewpoints: why the test and the CI can’t disagree <span class="mo">Mean only</span></h3>
+      <div class="mowarn"><span aria-hidden="true">⚠️</span><div><b class="t">Mean only.</b> Both rows below use the <b>same ruler, SE = s/√n</b>, so the bars have identical widths and the verdicts flip at exactly the same gap. For a <b>proportion</b> the test’s ruler is √(p₀(1 − p₀)/n) and the CI’s is √(p̂(1 − p̂)/n): two different widths, so near the cutoff they can disagree. See the proportion box below.</div></div>
       <div class="story" style="margin:6px 0 8px"><span class="ico" aria-hidden="true">📏</span><div><p>The test stands at <b>Crumble’s claim</b> and asks: “is the evidence within z* standard errors of me?” The CI stands at <b>our evidence</b> and asks: “is the claim within z* standard errors of me?” The distance from your house to school is the same as from school to your house, so the two questions always get the same answer. Drag the distance, or press sweep, and watch both rows flip at the same moment.</p></div></div>
       <div class="twinCtl">
         <label for="twinD" class="clab">Gap x̄ − μ₀</label>
@@ -398,11 +422,35 @@ footer svg.ck{width:34px;height:34px}
       </div>
       <div class="chips"><span class="chip" id="chipA"></span><span class="chip" id="chipB"></span></div>
       <div class="bscroll"><svg id="twinSvg" viewBox="0 0 760 252" role="img" aria-label="Top row: the claim's ordinary zone with x-bar marked. Bottom row: the confidence interval around x-bar with the claim marked. Both use the same width."></svg></div>
-      <h3 style="margin:16px 0 2px">Coverage: what “95% confident” is really counting</h3>
+      <h3 style="margin:16px 0 2px">Coverage: what “95% confident” is really counting <span class="mo">Mean only</span></h3>
       <p class="note" style="margin:0 0 6px">Now put Crumble in the honest-manager world (his claim is the truth) and hold 50 trials. Each row is one random group: the dot is its average, the bar is its CI, and the shaded column is the claim’s “ordinary” zone. A trial’s CI misses the true claim <b>exactly when</b> its dot falls outside the zone. Same distance, same verdict, every row.</p>
       <div class="bscroll"><svg id="covSvg" viewBox="0 0 760 430" role="img" aria-label="Fifty confidence intervals from a world where the claim is true; the ones that miss the claim are exactly the ones whose average lands outside the claim's ordinary zone"></svg></div>
       <div class="narr" id="covTxt"></div>
       <div class="pro"><span class="k">Statistician’s wording</span><p id="covPro"></p></div>
+    </div>
+    <div class="propw" id="propw">
+      <h3>⚠️ Proportions: the two viewpoints use different rulers</h3>
+      <div class="story" style="margin:6px 0 8px"><span class="ico" aria-hidden="true">📐</span><div><p>New charge: Crumble claims only <b>10%</b> of Terps are “big eaters.” We count big eaters in a random group. Now the yardstick depends on the proportion itself: SE = √(p(1 − p)/n). The <b>test</b> stands at his claim and must use <b>his</b> p₀ (that’s what “assume he’s honest” means). The <b>CI</b> has no claim to use, so it plugs in <b>our</b> p̂. Two different p’s, two rulers of different lengths. The gap between p̂ and p₀ is the same from both ends, but it’s measured against different yardsticks.</p><p>Most of the time both still give the same verdict. Only when the evidence sits <b>right near the cutoff</b> can one say guilty while the other says not guilty. Try the presets.</p></div></div>
+      <div class="presets" id="propPresets"></div>
+      <div class="propCtl">
+        <div><label for="pp0">Claim p₀ <span id="pp0v"></span></label><input type="range" id="pp0" min="0.05" max="0.95" step="0.01" value="0.10"></div>
+        <div><label for="pn">Group size n <span id="pnv"></span></label><input type="range" id="pn" min="20" max="1000" step="10" value="100"></div>
+        <div><label for="px">Big eaters in our group <span id="pxv"></span></label><input type="range" id="px" min="0" max="100" step="1" value="16"></div>
+      </div>
+      <div class="chips"><span class="chip" id="pcA"></span><span class="chip" id="pcB"></span><span class="chip" id="pcC"></span></div>
+      <div class="bscroll"><svg id="propSvg" viewBox="0 0 760 236" role="img" aria-label="Top: the claim's zone using the claim's SE. Bottom: the CI using the sample's SE. The two bars have different widths."></svg></div>
+      <div class="tablewrap"><table class="propTab" id="propTab"></table></div>
+      <h3 style="margin:14px 0 2px;font-size:16px">Where can they disagree? Every possible count, same claim and n</h3>
+      <p class="note" style="margin:0 0 4px">Each tick is one possible number of big eaters (0 to n). Red: both say guilty. Green: both say not guilty. <b style="color:#8A5A12">Gold: the two views disagree.</b> The gold only ever shows up in thin slivers next to the cutoffs.</p>
+      <div class="bscroll"><svg id="propStrip" viewBox="0 0 760 92" role="img" aria-label="Every possible sample count colored by whether the test and the CI agree"></svg></div>
+      <div class="narr" id="propTxt"></div>
+      <div class="rot" id="rot">
+        <h3>📋 Rule of thumb: when can the CI stand in for the test?</h3>
+        <ol id="rotList"></ol>
+        <div class="rotV" id="rotV"></div>
+        <p class="note" style="margin:8px 0 0"><b>One line for students:</b> for a proportion, the CI gives the same verdict as the test unless p₀ sits right at the edge of the interval. If it’s that close, run the test.</p>
+      </div>
+      <div class="pro"><span class="k">Statistician’s wording</span><p>For H₀: p = p₀, the one-proportion z-test uses SE₀ = √(p₀(1 − p₀)/n) because H₀ specifies p; the Wald CI uses SE = √(p̂(1 − p̂)/n). The two decisions can differ when p̂ is near the rejection boundary; the discrepancy shrinks as n grows. Report the <b>test</b> as the formal decision. The interval that exactly matches the test is the <b>Wilson (score) interval</b>, the set of all p₀ the z-test would not reject; in R, <code>prop.test(x, n, p = p0, correct = FALSE)</code> reports both, consistently.</p></div>
     </div>
     <div class="why">
       <h3>Why do these rules work?</h3>
@@ -422,7 +470,7 @@ footer svg.ck{width:34px;height:34px}
         </div>
       </details>
       <details open>
-        <summary>3 · Why reject when μ₀ falls outside the CI?</summary>
+        <summary>3 · Why reject when μ₀ falls outside the CI? <span class="mo">Mean only</span></summary>
         <div class="whyIn">
           <div><ul id="whyC"></ul></div>
           <svg id="whyCsvg" viewBox="0 0 400 200" role="img" aria-label="The same distance measured from the claim and from x-bar"></svg>
@@ -442,7 +490,8 @@ footer svg.ck{width:34px;height:34px}
       <tr id="r-greater"><td>μ &gt; μ₀</td><td class="mono">P(Z ≥ z)</td><td>z ≥ z<sub>α</sub> (1.645 at α = .05)</td><td>μ₀ is below the one-sided lower bound x̄ − z<sub>α</sub>·SE</td></tr>
       <tr id="r-less"><td>μ &lt; μ₀</td><td class="mono">P(Z ≤ z)</td><td>z ≤ −z<sub>α</sub> (−1.645 at α = .05)</td><td>μ₀ is above the one-sided upper bound x̄ + z<sub>α</sub>·SE</td></tr>
     </table></div>
-    <p class="mini" style="margin-top:6px">Highlighted row = your current Hₐ. For a mean, the test and the CI use the same SE = s/√n, so the three methods always agree. (For a proportion they can split right at the edge, because the test’s SE uses p₀ and the CI’s uses p̂.) With small n, use t in place of Z.</p>
+    <p class="mini" style="margin-top:6px">Highlighted row = your current Hₐ. With small n, use t in place of Z.</p>
+    <div class="mowarn"><span aria-hidden="true">⚠️</span><div><b class="t">The CI column agrees exactly only for a mean.</b> For a mean, the test and the CI use the same SE = s/√n, so all three methods always agree. For a <b>proportion</b>, the p-value and critical-value columns still always agree (same test), but the CI column uses SE from p̂ instead of p₀ and can split from them in borderline cases. Then the <b>test</b> is the formal verdict.</div></div>
     <div class="say">
       <div style="--c:var(--rej)"><h3>Reject H₀ <span class="note">· court: “guilty”</span></h3>
         <ul><li>p-value ≤ α, or z in the rejection region, or μ₀ outside the CI.</li>
@@ -462,9 +511,10 @@ footer svg.ck{width:34px;height:34px}
     <div class="story"><span class="ico" aria-hidden="true">📼</span><div><p>Real courts never find out whether a “not guilty” defendant actually did it. We can, because we have the security tape: the true average is 42.20 cookies. So we can watch Crumble walk free while lying, over and over, and see exactly why a statistician never says “we accept H₀.”</p></div></div>
 
     <div class="part">
-      <h3><span class="pn">1</span>One body of evidence, many claims it can’t convict</h3>
+      <h3><span class="pn">1</span>One body of evidence, many claims it can’t convict <span class="mo">Mean only</span></h3>
       <p class="sub" style="margin-bottom:6px">Keep the same interview and test every possible claim from 25 to 75 cookies. Green = we would fail to reject that claim; red = we would reject it.</p>
       <svg id="ruler" viewBox="0 0 900 150" role="img" aria-label="Every claimed mean colored by whether this sample rejects it"></svg>
+      <div class="mowarn" style="margin-bottom:8px"><span aria-hidden="true">⚠️</span><div><b class="t">Mean only:</b> here the green band equals the usual CI exactly. For a proportion, the band of claims the test can’t reject is the <b>Wilson (score) interval</b>, which is close to, but not the same as, p̂ ± z*·√(p̂(1 − p̂)/n). The big idea (many claims survive, so “not guilty” ≠ “innocent”) holds either way.</div></div>
       <div class="narr" id="rulerTxt"></div>
     </div>
 
@@ -688,6 +738,7 @@ function render() {
   drawBridge(T, a, alt);
   drawWhy(m, s, n, mu0, a, alt, T, god, mu0s);
   drawTwin();
+  drawProp();
   drawRecap(m, T.se, n, mu0, mu0s, a, alt, T);
   /* step 4 */
   ['two', 'greater', 'less'].forEach(k => $('r-' + k).style.background = k === alt ? '#FFF1C9' : '');
@@ -1043,6 +1094,90 @@ function drawRecap(m, se, n, mu0, mu0s, a, alt, T) {
   const inside = mu0 >= lo && mu0 <= hi;
   $('recLink').innerHTML = `<b>The two jobs are linked.</b> Crumble’s ${mu0s} is ${inside ? '<b>inside</b>' : '<b>outside</b>'} last time’s ${lvl}% CI (${fx(lo, 1)} to ${fx(hi, 1)}), so the estimate already hinted at the verdict: ${inside ? 'his number is one of the believable values, so the trial can’t throw it out' : 'his number is not among the believable values, so the trial throws it out'}.` +
     (alt === 'two' ? '' : ` (Here Hₐ is one-sided, so the matching interval is a one-sided bound; Step 3 handles that case.)`);
+}
+
+
+/* ---------- proportion: two rulers ---------- */
+const pr = { p0: 0.10, n: 100, x: 16 };
+function propVerdicts(x, n, p0, zc) {
+  const ph = x / n, se0 = Math.sqrt(p0 * (1 - p0) / n), se1 = Math.sqrt(ph * (1 - ph) / n), z = (ph - p0) / se0;
+  const pval = 2 * (1 - pnorm(Math.abs(z))), rT = Math.abs(z) >= zc, lo = ph - zc * se1, hi = ph + zc * se1, rC = p0 < lo || p0 > hi;
+  return { ph, se0, se1, z, pval, rT, lo, hi, rC };
+}
+function drawProp() {
+  const a = st.a, zc = qnorm(1 - a / 2), lvl = Math.round((1 - a) * 100), { p0, n } = pr; pr.x = Math.min(pr.x, n);
+  $('px').max = n; $('px').value = pr.x; $('pp0').value = p0; $('pn').value = n;
+  const V = propVerdicts(pr.x, n, p0, zc), x = pr.x;
+  $('pp0v').textContent = fx(p0, 2); $('pnv').textContent = n; $('pxv').textContent = `${x} of ${n} (p̂ = ${fx(V.ph, 3)})`;
+  $('pcA').className = 'chip ' + (V.rT ? 'out' : 'in'); $('pcA').textContent = `Test (ruler from p₀): ${V.rT ? 'guilty' : 'not guilty'}`;
+  $('pcB').className = 'chip ' + (V.rC ? 'out' : 'in'); $('pcB').textContent = `CI (ruler from p̂): ${V.rC ? 'guilty' : 'not guilty'}`;
+  $('pcC').className = 'chip ' + (V.rT === V.rC ? 'in' : 'dis'); $('pcC').textContent = V.rT === V.rC ? 'They agree' : '⚠️ They DISAGREE (borderline case)';
+  const me0 = zc * V.se0, me1 = zc * V.se1, span = Math.max(me0, me1, 0.01);
+  let lo = Math.max(0, Math.min(p0 - me0, V.ph - me1, p0, V.ph) - 0.6 * span), hi = Math.min(1, Math.max(p0 + me0, V.ph + me1, p0, V.ph) + 0.6 * span);
+  const L = 24, R = 736, sx = v => L + (v - lo) / (hi - lo) * (R - L), y1 = 70, y2 = 150, halo = 'stroke="#FFFBF2" stroke-width="5" stroke-linejoin="round" paint-order="stroke"';
+  const band = (a1, b1, y, col, op) => `<rect x="${fx(sx(Math.max(lo, a1)), 1)}" y="${y - 11}" width="${fx(sx(Math.min(hi, b1)) - sx(Math.max(lo, a1)), 1)}" height="22" rx="11" fill="${col}" fill-opacity="${op}" stroke="${col}" stroke-width="1.5"/>`;
+  let g = '';
+  const step = (hi - lo) > 0.4 ? 0.1 : (hi - lo) > 0.15 ? 0.05 : 0.02;
+  for (let t = Math.ceil(lo / step) * step; t <= hi + 1e-9; t += step) g += `<line x1="${sx(t)}" y1="40" x2="${sx(t)}" y2="186" stroke="#EFE7DA"/><text x="${sx(t)}" y="206" text-anchor="middle" font-size="11.5" fill="${MUTED}">${fx(t, 2)}</text>`;
+  g += `<line x1="${L}" y1="190" x2="${R}" y2="190" stroke="${INK}" stroke-width="1.5"/><text x="${R}" y="224" text-anchor="end" font-size="11" fill="${MUTED}">proportion of big eaters</text>`;
+  g += band(p0 - me0, p0 + me0, y1, '#8C8378', .18) + band(V.lo, V.hi, y2, KEEP, .16);
+  g += `<line x1="${sx(p0)}" y1="${y1 - 16}" x2="${sx(p0)}" y2="${y2 + 16}" stroke="${RED}" stroke-width="3"/>`;
+  g += `<line x1="${sx(V.ph)}" y1="${y1}" x2="${sx(V.ph)}" y2="${y2}" stroke="${INK}" stroke-width="2.5" stroke-dasharray="5 4"/>`;
+  g += `<circle cx="${sx(V.ph)}" cy="${y1}" r="8" fill="${V.rT ? REJ : KEEP}" stroke="#fff" stroke-width="2"/><circle cx="${sx(p0)}" cy="${y2}" r="8" fill="${V.rC ? REJ : KEEP}" stroke="#fff" stroke-width="2"/>`;
+  g += `<text x="${L}" y="${y1 - 22}" font-size="13" font-weight="800" fill="${INK}" ${halo}>Test: the claim’s zone, p₀ ± ${fx(zc, 2)}·√(p₀(1−p₀)/n) = ±${fx(me0, 3)}</text>`;
+  g += `<text x="${L}" y="${y2 - 22}" font-size="13" font-weight="800" fill="${INK}" ${halo}>CI: p̂ ± ${fx(zc, 2)}·√(p̂(1−p̂)/n) = ±${fx(me1, 3)}  ${Math.abs(me1 - me0) > 1e-4 ? (me1 > me0 ? '(wider ruler)' : '(narrower ruler)') : '(same ruler)'}</text>`;
+  g += `<text x="${sx(V.ph) + 12}" y="${y1 + 4}" font-size="13" font-weight="900" fill="${INK}" ${halo}>p̂</text><text x="${sx(p0)}" y="${y2 + 32}" text-anchor="middle" font-size="12" font-weight="800" fill="${RED}" ${halo}>claim p₀</text>`;
+  $('propSvg').innerHTML = g;
+  $('propTab').innerHTML = `<tr><th></th><th>uses p =</th><th>SE</th><th>yardstick z*·SE</th><th>gap |p̂ − p₀|</th><th>verdict</th></tr>
+    <tr><td><b>Test</b> (stand at the claim)</td><td>p₀ = ${fx(p0, 2)}</td><td>${fx(V.se0, 4)}</td><td>${fx(me0, 4)}</td><td>${fx(Math.abs(V.ph - p0), 4)}</td><td><span class="tag ${V.rT ? 'rej' : 'keep'}">${V.rT ? 'reject' : 'fail to reject'}</span> <span class="mini">z = ${fx(V.z)}, p = ${fp(V.pval)}</span></td></tr>
+    <tr><td><b>CI</b> (stand at the evidence)</td><td>p̂ = ${fx(V.ph, 3)}</td><td>${fx(V.se1, 4)}</td><td>${fx(me1, 4)}</td><td>${fx(Math.abs(V.ph - p0), 4)}</td><td><span class="tag ${V.rC ? 'rej' : 'keep'}">${V.rC ? 'reject' : 'fail to reject'}</span> <span class="mini">${lvl}% CI (${fx(V.lo, 3)}, ${fx(V.hi, 3)})</span></td></tr>`;
+  /* strip over every possible count */
+  const Ls = 24, Rs = 736, cw = (Rs - Ls) / (n + 1); let st2 = '', dis = [];
+  for (let k = 0; k <= n; k++) { const v = propVerdicts(k, n, p0, zc), col = v.rT !== v.rC ? '#E0A526' : v.rT ? REJ : KEEP; if (v.rT !== v.rC) dis.push(k);
+    st2 += `<rect x="${fx(Ls + k * cw, 2)}" y="18" width="${fx(Math.max(cw - (n > 200 ? 0 : 0.6), 0.4), 2)}" height="34" fill="${col}" fill-opacity="${v.rT !== v.rC ? 1 : .55}"/>`; }
+  const xk = Ls + (x + 0.5) * cw;
+  st2 += `<path d="M${fx(xk, 1)} 14 l-6 -9 h12 z" fill="${INK}"/><text x="${fx(xk, 1)}" y="68" text-anchor="middle" font-size="11.5" font-weight="800" fill="${INK}">ours: ${x}</text>`;
+  st2 += `<text x="${Ls}" y="86" font-size="11" fill="${MUTED}">0 big eaters</text><text x="${Rs}" y="86" text-anchor="end" font-size="11" fill="${MUTED}">${n} big eaters</text>`;
+  const p0k = Ls + (p0 * n + 0.5) * cw; st2 += `<line x1="${fx(p0k, 1)}" y1="14" x2="${fx(p0k, 1)}" y2="56" stroke="${RED}" stroke-width="2"/><text x="${fx(p0k, 1)}" y="10" text-anchor="middle" font-size="11" font-weight="800" fill="${RED}">claim</text>`;
+  $('propStrip').innerHTML = st2;
+  const runs = []; dis.forEach(k => { const r = runs[runs.length - 1]; if (r && k === r[1] + 1) r[1] = k; else runs.push([k, k]); });
+  $('propTxt').innerHTML = `With p₀ = ${fx(p0, 2)} and n = ${n}, the two views disagree for <b>${dis.length} of the ${n + 1}</b> possible counts` +
+    (runs.length ? ` (${runs.map(r => r[0] === r[1] ? r[0] : r[0] + '–' + r[1]).join(' and ')}), all hugging the cutoffs. Everywhere else they agree.` : `: none at all here.`) +
+    ` ${V.rT !== V.rC ? `<b>Our count of ${x} is one of those borderline cases</b>: it sits in the thin band between the two rulers’ cutoffs (p-value ${fp(V.pval)} vs α = ${a}).` : ''}` +
+    ` Disagreements grow when the claim is far from 0.5 (the two rulers differ most) and shrink as n grows (p̂ settles near the truth, so the rulers converge). In this demo the test is always two-sided at the α in the settings bar.`;
+  drawRot(x, n, p0, zc, a, V);
+  document.querySelectorAll('#propPresets button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === `${p0}|${n}|${x}`)));
+}
+[[0.10, 100, 16, '16/100 vs claim 10%: test guilty, CI not'], [0.10, 100, 5, '5/100 vs claim 10%: CI guilty, test not'], [0.10, 1000, 140, 'n = 1000: almost no gold'], [0.50, 100, 60, 'Claim 50%: rulers nearly equal']].forEach(([p0, n, x, lab]) => {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = lab; b.dataset.k = `${p0}|${n}|${x}`;
+  b.onclick = () => { pr.p0 = p0; pr.n = n; pr.x = x; drawProp(); }; $('propPresets').appendChild(b); });
+$('pp0').oninput = () => { pr.p0 = +(+$('pp0').value).toFixed(2); drawProp(); };
+$('pn').oninput = () => { const old = pr.n; pr.n = +$('pn').value; pr.x = Math.round(pr.x / old * pr.n); drawProp(); };
+$('px').oninput = () => { pr.x = +$('px').value; drawProp(); };
+
+
+function drawRot(x, n, p0, zc, a, V) {
+  const me0 = zc * V.se0, me1 = zc * V.se1, gap = Math.abs(V.ph - p0), safe = zc * Math.abs(V.se0 - V.se1);
+  const edge = Math.min(Math.abs(p0 - V.lo), Math.abs(p0 - V.hi)), lvl = Math.round((1 - a) * 100);
+  const condCI = x >= 10 && n - x >= 10, condT = n * p0 >= 10 && n * (1 - p0) >= 10;
+  const lo2 = Math.min(me0, me1), hi2 = Math.max(me0, me1), between = gap >= lo2 && gap < hi2, near5 = p0 >= 0.3 && p0 <= 0.7;
+  const it = (cls, mark, html, live) => `<li><span class="st ${cls}">${mark}</span><div>${html}${live ? `<span class="live">${live}</span>` : ''}</div></li>`;
+  $('rotList').innerHTML = [
+    it(condCI && condT ? 'ok' : 'bad', condCI && condT ? '✓' : '!', `<b>Check both success-failure conditions first.</b> The CI needs n·p̂ ≥ 10 and n(1 − p̂) ≥ 10; the test needs n·p₀ ≥ 10 and n(1 − p₀) ≥ 10. If either fails, neither the CI nor the z-test is trustworthy: use simulation or an exact test (<code>binom.test</code>).`,
+      `CI: ${x} and ${n - x} ${condCI ? '✓' : '✗'} · test: ${fx(n * p0, 1)} and ${fx(n * (1 - p0), 1)} ${condT ? '✓' : '✗'}`),
+    it(between ? 'warn' : 'ok', between ? '!' : '✓', `<b>Exact check: compare the gap with both margins.</b> If |p̂ − p₀| is bigger than both, both reject; smaller than both, both fail to reject. Only a gap <i>between</i> the two margins makes them disagree.`,
+      `gap ${fx(gap, 4)} · test margin ${fx(me0, 4)} · CI margin ${fx(me1, 4)} → ${between ? 'BETWEEN: run the test' : gap >= hi2 ? 'bigger than both: agree (reject)' : 'smaller than both: agree (fail to reject)'}`),
+    it(edge <= safe && between ? 'warn' : 'ok', edge <= safe && between ? '!' : '✓', `<b>Quick version, read off the CI: the safety zone.</b> If p₀ is farther than z*·|SE₀ − SE| from the nearest end of the interval, the CI is safe. If it’s closer, it <i>might</i> disagree, so use the exact check above.`,
+      `safety zone ${fx(safe, 4)} · p₀ is ${fx(edge, 4)} from the nearest end of the ${lvl}% CI (${fx(V.lo, 3)}, ${fx(V.hi, 3)}) → ${edge > safe ? 'outside the zone: CI is safe' : between ? 'inside the zone, and the exact check confirms a disagreement' : 'inside the zone, but the exact check says they still agree'}`),
+    it(near5 ? 'ok' : 'warn', near5 ? '✓' : '!', `<b>Claims near 0.5 are almost always safe.</b> p(1 − p) is flat around 0.5, so for p₀ between about 0.3 and 0.7 (with p̂ nearby) the two SEs differ by only a few percent. Claims near 0 or 1 deserve a second look.`,
+      `p₀ = ${fx(p0, 2)} → ${near5 ? 'in the 0.3–0.7 comfort range' : 'outside 0.3–0.7: rulers can differ a lot'} · SE₀/SE = ${fx(V.se0 / (V.se1 || 1e-9), 2)}`),
+    it('info', 'n', `<b>Bigger n shrinks the risk.</b> The safety zone shrinks like 1/√n and p̂ settles near the truth, so the two rulers converge.`, `with n = ${n}, the safety zone is ${fx(safe, 4)}`),
+    it('info', 'W', `<b>Want them to always agree?</b> Use the Wilson (score) interval, which is built by inverting the test: <code>prop.test(x, n, p = p0, correct = FALSE)$conf.int</code>.`, '')
+  ].join('');
+  const v = $('rotV');
+  if (!(condCI && condT)) { v.className = 'rotV bad'; v.textContent = '✗ Conditions fail: neither the CI nor the z-test should be trusted here. Use simulation or an exact test.'; }
+  else if (between) { v.className = 'rotV warn'; v.textContent = `⚠️ Borderline: p₀ is within the safety zone of the CI’s edge. Don’t rely on the CI; run the test (here the test says ${V.rT ? 'reject' : 'fail to reject'}).`; }
+  else { v.className = 'rotV ok'; v.textContent = `✓ The CI can stand in for the test here: both say ${V.rT ? 'reject H₀' : 'fail to reject H₀'}.`; }
 }
 
 function drawRuler(m, s, n, a, alt, mu0, T, god) {
