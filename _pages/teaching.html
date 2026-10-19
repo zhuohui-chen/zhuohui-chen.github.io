@@ -7,6 +7,32 @@ author_profile: true
 
 {% include base_path %}
 
-{% for post in site.teaching reversed %}
+<h2 class="pub-section">Featured: The Cookie Series</h2>
+<p class="page-lead">Interactive statistics demos I built for INST314 at UMD. They run entirely in the browser.</p>
+<div class="demo-grid">
+  <a class="demo-card" href="{{ base_path }}/demos/inst314/cookie-question.html">
+    <span class="demo-card__emoji">🍪</span>
+    <span class="demo-card__title">The Cookie Question</span>
+    <span class="demo-card__text">Sampling distributions, the bootstrap, the CLT, and confidence intervals.</span>
+    <span class="demo-card__cta">Open the demo →</span>
+  </a>
+  <a class="demo-card" href="{{ base_path }}/demos/inst314/cookie-hypothesis-lab.html">
+    <span class="demo-card__emoji">⚖️</span>
+    <span class="demo-card__title">The Cookie Claim: Reject or Not?</span>
+    <span class="demo-card__text">Hypothesis testing as a courtroom: p-values, errors, and the link to confidence intervals.</span>
+    <span class="demo-card__cta">Open the lab →</span>
+  </a>
+</div>
+
+<h2 class="pub-section">University of Maryland</h2>
+{% assign umd = site.teaching | where: "type", "Teaching Assistant" | sort: "date" | reverse %}
+{% for post in umd %}
+  {% include archive-single.html %}
+{% endfor %}
+
+<h2 class="pub-section">IMF capacity development</h2>
+<p class="page-lead">Courses for central bank staff, taught as an IMF Research Analyst.</p>
+{% assign imf = site.teaching | where: "type", "IMF Capacity Development" | sort: "date" | reverse %}
+{% for post in imf %}
   {% include archive-single.html %}
 {% endfor %}

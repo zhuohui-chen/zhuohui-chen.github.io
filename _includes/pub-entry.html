@@ -9,7 +9,9 @@
   <div class="pub__venue"><i>{{ post.venue }}</i>, {% if post.year_label %}{{ post.year_label }}{% else %}{{ post.date | date: "%Y" }}{% endif %}</div>
   {% if post.note %}<div class="pub__note">{{ post.note }}</div>{% endif %}
   {% if include.excerpt and post.excerpt %}<div class="pub__excerpt">{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}</div>{% endif %}
-  {% if post.links %}
+  {% if include.featured and post.featured_link %}
+  <div class="pub__links"><a class="pill" href="{{ post.featured_link.url }}">{{ post.featured_link.name }}</a></div>
+  {% elsif post.links %}
   <div class="pub__links">
     {% for l in post.links %}<a class="pill" href="{{ l.url }}">{{ l.name }}</a>{% endfor %}
   </div>

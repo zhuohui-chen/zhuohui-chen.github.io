@@ -60,12 +60,6 @@ Supported Financial Sector Assessment Programs with stress testing and modeling 
 <span class="project__links"><a class="pill" href="/publication/saudi-arabia-fsap">Saudi Arabia FSAP</a><a class="pill" href="/publication/panama-fsap">Panama FSAP</a></span>
 </div>
 
-<div class="project">
-<div class="project__head"><span class="project__title">Text Classification for Central Bank Legislation</span></div>
-
-Implemented and compared eight Naive Bayes classifiers that sort segments of central bank legislation into thematic categories. This work fed a topic-recommendation module for the IMF's Central Bank Legislation Database.
-</div>
-
 ## Course projects (Ph.D.)
 
 <div class="project">

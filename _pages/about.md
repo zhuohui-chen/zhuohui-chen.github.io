@@ -11,8 +11,14 @@ I'm Zhuohui (Jerry) Chen, a third-year Ph.D. student at the [College of Informat
 
 Before my Ph.D., I spent three years as a Research Analyst in the Central Bank Operations Division of the [International Monetary Fund](https://www.imf.org/)'s Monetary and Capital Markets Department. There I built forecasting models that central banks use, co-authored IMF working papers on tail-risk and reserve-demand forecasting, and joined 25+ technical assistance and financial sector assessment missions. My background is unusually mixed: computer science, English and translation studies, and public administration. That mix is why I care about language, measurement, and real-world use in equal parts.
 
-<div class="notice--info" markdown="1">
-**I'm looking for research internships for Summer 2027**, especially in LLM agents, evaluation, and AI for finance or forecasting. Feel free to [email me](mailto:zchen95@umd.edu) or see my [CV (PDF)](https://drive.google.com/file/d/1CPSGyz5djb9XpP3v9VmcuijJ3RrgaYgX/view?usp=sharing).
+<div class="callout">
+  <div class="callout__eyebrow">Open to opportunities</div>
+  <div class="callout__title">I'm looking for research internships for Summer 2027</div>
+  <p class="callout__text">Especially in <strong>LLM agents</strong>, <strong>evaluation</strong>, and <strong>AI for finance or forecasting</strong>.</p>
+  <div class="callout__actions">
+    <a class="btn-solid" href="mailto:zchen95@umd.edu"><i class="fas fa-envelope" aria-hidden="true"></i> Email me</a>
+    <a class="btn-ghost" href="https://drive.google.com/file/d/1CPSGyz5djb9XpP3v9VmcuijJ3RrgaYgX/view?usp=sharing"><i class="fas fa-file-pdf" aria-hidden="true"></i> CV (PDF)</a>
+  </div>
 </div>
 
 ## Research
@@ -44,7 +50,7 @@ I also work on multilingual and code-switched NLP, including pragmatic realism i
 {% for slug in selected %}
   {% assign target = "/publication/" | append: slug %}
   {% for post in site.publications %}
-    {% if post.url == target %}{% include pub-entry.html %}{% endif %}
+    {% if post.url == target %}{% include pub-entry.html featured=true %}{% endif %}
   {% endfor %}
 {% endfor %}
 

@@ -8,6 +8,9 @@ authors: '<b>Zhuohui Chen</b>, Nikolaos Kourentzes, Romain Veyrune'
 venue: 'IMF Working Paper WP/23/179'
 note: 'Presented at the International Symposium on Forecasting, 2023. The model was used in Box 7 of the IMF&#39;s <a href="https://www.imf.org/en/publications/cr/issues/2024/07/18/united-states-2024-article-iv-consultation-press-release-staff-report-and-statement-by-the-552100">2024 U.S. Article IV report</a> to estimate the Fed&#39;s long-run reserve needs.'
 excerpt: 'A methodology for estimating banks&#39; demand for central bank reserves as a function of the policy rate spread and macro and market-structure variables, comparing parametric sigmoid curves with nonparametric machine-learning estimators, with scenario analysis to guide central bank operations.'
+featured_link:
+  name: 'IMF page'
+  url: 'https://www.imf.org/en/Publications/WP/Issues/2023/09/01/Modeling-the-Reserve-Demand-to-Facilitate-Central-Bank-Operations-538754'
 links:
   - name: 'IMF page'
     url: 'https://www.imf.org/en/Publications/WP/Issues/2023/09/01/Modeling-the-Reserve-Demand-to-Facilitate-Central-Bank-Operations-538754'

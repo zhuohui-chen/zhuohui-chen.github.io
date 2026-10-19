@@ -47,7 +47,7 @@ LLMs for forecasting and finance · Trustworthy and secure LLM agents · LLM eva
     <li>Built a reserve-demand model (WP/23/179) used in the IMF's 2024 U.S. Article IV report to estimate the Fed's reserve needs (US$2.1–3.2 trillion).</li>
     <li>Developed and taught Python/R/MATLAB liquidity-forecasting tools delivered to 15+ central banks; first-authored the IMF handbook chapter on their statistical methods.</li>
     <li>Joined 25+ technical assistance and FSAP missions, including stress testing of liquidity, solvency, and interconnectedness for Saudi Arabia and Panama.</li>
-    <li>Built text classifiers for a topic recommender in the Central Bank Legislation Database; automated extraction of Bank of Japan securities-operations data from PDFs and the web.</li>
+    <li>Automated extraction of Bank of Japan securities-operations data from PDFs and the web.</li>
   </ul>
 </div>
 <div class="cv-entry">

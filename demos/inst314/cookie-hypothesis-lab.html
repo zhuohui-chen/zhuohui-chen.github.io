@@ -1,0 +1,1115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Cookie Claim: Reject or Not?</title>
+<style>
+:root{
+  --bg:#FBF5EA; --card:#FFFFFF; --ink:#1E1A16; --muted:#6B635A; --line:#E6DCCB;
+  --cream:#FFF1C9; --red:#C8102E; --gold:#FFD200; --black:#1A1A1A;
+  --rej:#C0392B; --rej-soft:rgba(192,57,43,.22); --keep:#2F7D4F; --keep-soft:rgba(47,125,79,.18);
+  --pv:#2F5DA8; --pv-soft:rgba(47,95,168,.28); --truth:#B7791F;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:1120px;margin:0 auto;padding:24px 16px 64px}
+h2{font-size:22px;margin:0 0 4px;line-height:1.25}
+h3{font-size:17px;margin:0 0 4px}
+p{margin:0 0 8px}
+code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}
+.num{font-variant-numeric:tabular-nums}
+.sub{color:var(--muted);margin:0 0 14px}
+.note{font-size:14px;color:var(--muted)}
+.mini{font-size:12.5px;color:var(--muted)}
+svg{display:block;width:100%;height:auto}
+button{font:inherit;font-weight:650;cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:999px;padding:7px 14px;min-height:40px;transition:transform .08s}
+button:hover{transform:translateY(-1px)}
+button[aria-pressed="true"]{background:var(--red);border-color:var(--black);color:#fff}
+button.primary{background:var(--gold)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--pv);outline-offset:2px}
+/* hero */
+.hero{position:relative;overflow:hidden;background:var(--red);color:#fff;border:2px solid var(--black);border-radius:18px;box-shadow:6px 6px 0 var(--black);padding:26px 28px 28px}
+.heroIn{position:relative;z-index:1;max-width:690px}
+.kicker{display:inline-block;background:var(--gold);color:var(--black);font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border:2px solid var(--black);border-radius:999px;padding:3px 12px}
+.hero h1{color:var(--gold);font-size:clamp(34px,6vw,60px);font-weight:900;letter-spacing:-1px;margin:12px 0 8px;line-height:1.05;text-shadow:3px 3px 0 var(--black)}
+.hero p{margin:0;font-size:17px}
+.deco{position:absolute;display:block;width:auto;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.35))}
+.deco.d1{width:150px;right:40px;top:26px;transform:rotate(-12deg)}
+.deco.d2{width:84px;right:186px;top:126px;transform:rotate(18deg)}
+.stamp{position:absolute;right:30px;bottom:22px;z-index:1;font-weight:900;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);border:3px solid var(--gold);border-radius:8px;padding:2px 10px;transform:rotate(-8deg)}
+@media (max-width:760px){.deco.d1{width:80px;right:12px;top:auto;bottom:10px}.deco.d2,.stamp{display:none}.heroIn{padding-bottom:64px}}
+.flagband{height:12px;margin:12px 0 4px;border-radius:6px;border:2px solid var(--black);background:repeating-conic-gradient(var(--black) 0 25%,var(--gold) 0 50%) 0 0/12px 12px}
+/* cards */
+.card{position:relative;background:var(--card);border:2px solid var(--ink);border-radius:14px;padding:20px;margin:18px 0;box-shadow:5px 5px 0 var(--ink)}
+.step{display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-bottom:4px}
+svg.ck{display:inline-block;width:22px;height:22px;flex:none}
+.ctog{position:absolute;top:14px;right:14px;min-height:36px;padding:4px 14px;font-size:14px;z-index:2}
+.card>.step,.card>h2{padding-right:120px}
+.card.closed>.step,.card.closed>h2{cursor:pointer}
+.card.closed .cbody{height:0;overflow:hidden;visibility:hidden}
+@media (max-width:600px){.card>.step,.card>h2{padding-right:0}.ctog{position:static;float:right;margin:-4px 0 6px 10px}}
+@media print{.ctog{display:none}.card.closed .cbody{height:auto;visibility:visible}.controls{position:static}}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.views{display:grid;grid-template-columns:minmax(0,2.05fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:1000px){.views{grid-template-columns:minmax(0,1fr)}}
+.pair{border:2.5px solid var(--red);border-radius:14px;background:#FFF6F3;padding:10px}
+.ciwrap{border:2.5px dashed var(--keep);border-radius:14px;background:#F3FAF5;padding:10px}
+.vhead{font-weight:800;font-size:14.5px;margin:2px 4px 8px;line-height:1.35}
+.vhead small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.pair .vhead{color:var(--red)} .ciwrap .vhead{color:var(--keep)}
+.pairCards{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:stretch}
+.linkb{align-self:center;display:grid;place-items:center;gap:4px;text-align:center;font-size:11.5px;font-weight:800;color:var(--red);width:54px;line-height:1.2}
+.linkb b{display:grid;place-items:center;width:40px;height:40px;border-radius:999px;background:var(--gold);border:2px solid var(--ink);color:var(--ink);font-size:20px}
+@media (max-width:720px){.pairCards{grid-template-columns:minmax(0,1fr)}.linkb{width:auto;grid-auto-flow:column;gap:8px}}
+.bridge{margin-top:10px;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:12px 14px}
+.bridge h3{margin:0 0 2px}
+.eq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+@media (max-width:640px){.eq{grid-template-columns:minmax(0,1fr)}}
+.eq div{border-radius:10px;padding:8px 12px;font-size:14.5px}
+.eq .a{background:rgba(47,95,168,.12);border:1.5px solid var(--pv)} .eq .b{background:rgba(192,57,43,.10);border:1.5px solid var(--rej)}
+.bscroll{overflow-x:auto}.bscroll svg{min-width:560px}
+.eq .k{font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+@media (max-width:900px){.grid3{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.box{background:var(--cream);border:1.5px solid var(--ink);border-radius:10px;padding:12px 14px}
+.hyp{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:18px;font-weight:700;line-height:1.7}
+.god{border:2px dashed var(--truth);background:#FFF8E6;border-radius:12px;padding:12px 14px}
+.god h3{color:var(--truth)}
+.god.off .godTxt{filter:blur(6px);user-select:none}
+.tag{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:1px 9px;color:#fff;letter-spacing:.03em}
+.tag.rej{background:var(--rej)} .tag.keep{background:var(--keep)} .tag.tr{background:var(--truth)}
+/* controls */
+.controls{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;border-bottom:2px solid var(--ink)}
+@media (max-width:700px){.controls{position:static}}
+.cgroup{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.clab{font-size:12.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.seg{display:flex;flex-wrap:wrap;gap:5px}.seg button{min-height:36px;padding:4px 12px;font-size:14.5px}
+.cgroup input[type=range]{width:170px;accent-color:var(--red)}
+.mu0v{font-weight:900;font-size:18px;min-width:52px;font-variant-numeric:tabular-nums}
+.toggle{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--truth)}
+/* stats */
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stat{background:var(--cream);border:1.5px solid var(--ink);border-radius:10px;padding:8px 12px;min-width:104px}
+.stat b{display:block;font-size:21px;font-variant-numeric:tabular-nums;line-height:1.15}
+.stat span{font-size:12.5px;color:var(--muted)}
+.pill{display:inline-block;font-weight:900;font-size:17px;padding:6px 16px;border-radius:999px;border:2.5px solid currentColor;background:#fff}
+.pill.rej{color:var(--rej)} .pill.keep{color:var(--keep)}
+.verdictRow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:12px}
+.checks{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px;font-size:14.5px}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.mk{flex:none;width:22px;height:22px;border-radius:999px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:13px}
+.mk.ok{background:var(--keep)} .mk.warn{background:#B7791F}
+/* methods */
+.method{border:2px solid var(--ink);border-top:8px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;display:grid;gap:8px;align-content:start;min-width:0}
+.method.rej{border-top-color:var(--rej)} .method.keep{border-top-color:var(--keep)}
+.method .eyebrow{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.method .rule{font-size:14px;color:var(--muted);margin:0}
+.calc{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;background:#FAF6EF;border-radius:8px;padding:8px 10px;white-space:pre-wrap;line-height:1.55}
+.out{font-weight:850}
+.method.rej .out{color:var(--rej)} .method.keep .out{color:var(--keep)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);margin-top:6px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:5px}
+/* tables */
+.tablewrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14.5px;font-variant-numeric:tabular-nums}
+table.t th,table.t td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+table.t th{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.say{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:760px){.say{grid-template-columns:minmax(0,1fr)}}
+.say div{border:2px solid var(--c);border-radius:12px;padding:10px 14px;background:#fff}
+.say h3{color:var(--c)}
+.say ul{margin:4px 0 0;padding-left:20px}
+.no{text-decoration:line-through;text-decoration-color:var(--rej);text-decoration-thickness:2px}
+/* why not accept */
+.part{margin-top:20px;border-top:2px dashed var(--line);padding-top:14px}
+.part:first-of-type{margin-top:6px;border-top:none;padding-top:0}
+.pn{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:999px;background:var(--red);color:#fff;font-size:14px;margin-right:8px;vertical-align:2px}
+.narr{background:var(--cream);border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;margin-top:10px}
+.court{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:8px}
+@media (max-width:640px){.court{grid-template-columns:minmax(0,1fr)}}
+.court div{border:1.5px solid var(--ink);border-radius:10px;padding:10px 14px;background:#fff}
+.court b.big{display:block;font-size:18px}
+.dots{display:grid;grid-template-columns:repeat(25,minmax(0,1fr));gap:4px;max-width:620px}
+@media (max-width:640px){.dots{grid-template-columns:repeat(20,minmax(0,1fr))}}
+.dots i{display:block;aspect-ratio:1/1;border-radius:50%;border:1.5px solid var(--ink)}
+.dots i.r{background:var(--rej)} .dots i.k{background:#BFE3CB}
+.dots i.me{outline:3px solid var(--gold);outline-offset:1px}
+.matrix{border-collapse:separate;border-spacing:6px;font-size:14.5px;width:100%;max-width:640px}
+.matrix th{font-size:12.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;text-align:center;padding:4px}
+.matrix th.rowh{text-align:right}
+.matrix td{border:2px solid var(--ink);border-radius:10px;padding:8px 10px;text-align:center;background:#fff;vertical-align:middle;transition:background .2s,opacity .2s}
+.matrix td b{display:block;font-size:15px}
+.matrix td .cnt{font-size:22px;font-weight:900;font-variant-numeric:tabular-nums}
+.matrix td.good{background:#E3F2E8} .matrix td.bad{background:#F8E1DE}
+.matrix td.dim{opacity:.35}
+.matrix td.me{box-shadow:0 0 0 4px var(--gold)}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+footer{font-size:13px;color:var(--muted);margin-top:24px;display:flex;gap:12px;align-items:center}
+footer svg.ck{width:34px;height:34px}
+.pq{margin-top:16px;border:2.5px solid var(--pv);border-radius:14px;background:#F4F7FD;padding:14px 16px}
+.pq .lead{font-size:12.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--pv);margin:0 0 4px}
+.pq blockquote{margin:0 0 12px;font-size:19px;font-weight:750;line-height:1.35;border-left:5px solid var(--pv);padding:2px 0 2px 12px}
+.pq3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:820px){.pq3{grid-template-columns:minmax(0,1fr)}}
+.pq3>div{background:#fff;border:1.5px solid var(--ink);border-radius:10px;padding:10px 12px;font-size:14.5px}
+.pq3 h4{margin:0 0 4px;font-size:15px;display:flex;gap:8px;align-items:center}
+.pq3 h4 i{font-style:normal;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:var(--pv);color:#fff;font-size:13px;flex:none}
+.pq3 .big{display:block;font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--pv);margin:4px 0 2px}
+.pqNot{margin:10px 0 0;padding-left:20px;font-size:14px}
+.pqNot li{margin:3px 0}
+.why{margin-top:16px;border:2px solid var(--ink);border-radius:14px;background:#fff;padding:12px 16px}
+.why>h3{margin:0 0 4px;font-size:19px}
+.why details{border-top:2px dashed var(--line);padding:10px 0 4px}
+.why details:first-of-type{border-top:none}
+.why summary{cursor:pointer;font-weight:850;font-size:16.5px;list-style:none;display:flex;gap:10px;align-items:center}
+.why summary::-webkit-details-marker{display:none}
+.why summary::before{content:'▸';display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;background:var(--gold);border:1.5px solid var(--ink);font-size:13px;flex:none;transition:transform .15s}
+.why details[open] summary::before{transform:rotate(90deg)}
+.whyIn{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start;margin-top:8px}
+@media (max-width:860px){.whyIn{grid-template-columns:minmax(0,1fr)}}
+.whyIn ul{margin:0;padding-left:20px;font-size:14.5px}
+.whyIn li{margin:4px 0}
+.whyIn .kicker2{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:1px 9px;color:#fff;background:var(--ink);margin-right:4px}
+.mathline{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;background:#FAF6EF;border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.6}
+.story{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;background:#FFF8E6;border:2px solid var(--ink);border-radius:12px;padding:12px 14px;margin:8px 0 12px;font-size:15.5px;line-height:1.55}
+.story .ico{font-size:28px;line-height:1}
+.story p{margin:0 0 6px}.story p:last-child{margin:0}
+.pro{border:2px solid var(--ink);border-left:8px solid var(--ink);border-radius:10px;background:#fff;padding:9px 13px;margin:10px 0 0;font-size:14.5px}
+.pro .k{display:inline-block;font-size:11.5px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;background:var(--ink);color:#fff;border-radius:4px;padding:1px 7px;margin-bottom:4px}
+.pro p{margin:2px 0}
+.dict{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:6px}
+.dict th,.dict td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+.dict th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.dict td:first-child{font-weight:800;white-space:nowrap}
+.dict td:nth-child(2){font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;white-space:nowrap}
+.pill small{display:block;font-size:11.5px;font-weight:700;letter-spacing:.02em;text-align:center;opacity:.9}
+.twin{margin-top:16px;border:2.5px solid var(--ink);border-radius:14px;background:#FFFDF7;padding:12px 16px}
+.twin>h3{margin:0 0 4px;font-size:19px}
+.twinCtl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin:8px 0}
+.twinCtl input[type=range]{flex:1;min-width:200px;accent-color:var(--red)}
+.twinCtl .dv{font-weight:900;font-variant-numeric:tabular-nums;min-width:120px}
+.twinCtl button{min-height:36px;padding:4px 12px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.chip{border:2px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:800;font-size:14px;background:#fff}
+.chip.in{border-color:var(--keep);color:var(--keep);background:#E3F2E8}.chip.out{border-color:var(--rej);color:var(--rej);background:#F8E1DE}
+.recap{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:stretch;margin-top:10px}
+@media (max-width:820px){.recap{grid-template-columns:minmax(0,1fr)}.recap .mid{transform:rotate(90deg);justify-self:center}}
+.rcard{border:2px solid var(--c);border-radius:12px;background:#fff;padding:12px 14px;font-size:15px}
+.rcard h3{margin:0 0 2px;color:var(--c);font-size:17px}
+.rcard .q{font-size:17px;font-weight:850;margin:6px 0 8px;line-height:1.3}
+.rcard .num{background:#FAF6EF;border-radius:8px;padding:8px 10px;margin-top:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.6}
+.rcard .tag2{display:inline-block;font-size:11.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;background:var(--c);color:#fff;border-radius:999px;padding:1px 9px}
+.recap .mid{display:grid;place-items:center;text-align:center;font-weight:800;font-size:13px;color:var(--muted);gap:4px;width:110px}
+.recap .mid .one{display:grid;place-items:center;width:64px;height:64px;border-radius:999px;background:var(--gold);border:2px solid var(--ink);font-size:30px}
+@media (max-width:820px){.recap .mid{transform:none;width:auto;grid-auto-flow:column}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="cookie" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="45" fill="#D9934A" stroke="#7A4517" stroke-width="5"/>
+      <path d="M22 38 Q30 20 50 15" fill="none" stroke="#F2C27F" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="34" cy="46" rx="7.5" ry="6" fill="#4A2A14"/><ellipse cx="60" cy="33" rx="6.5" ry="5" fill="#4A2A14"/>
+      <ellipse cx="55" cy="62" rx="8" ry="6" fill="#4A2A14"/><ellipse cx="30" cy="70" rx="5.5" ry="4.5" fill="#4A2A14"/>
+      <ellipse cx="74" cy="60" rx="5.5" ry="4.5" fill="#4A2A14"/><ellipse cx="45" cy="82" rx="5" ry="4" fill="#4A2A14"/>
+    </symbol>
+    <mask id="biteMask"><rect width="100" height="100" fill="#fff"/>
+      <circle cx="90" cy="18" r="14" fill="#000"/><circle cx="96" cy="38" r="12" fill="#000"/><circle cx="78" cy="6" r="11" fill="#000"/></mask>
+    <symbol id="cookieBite" viewBox="0 0 100 100"><g mask="url(#biteMask)"><use href="#cookie"/></g></symbol>
+  </defs>
+</svg>
+<main>
+  <header class="hero">
+    <svg class="deco d1" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookieBite"/></svg>
+    <svg class="deco d2" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>
+    <span class="stamp" aria-hidden="true">Court in session</span>
+    <div class="heroIn">
+      <span class="kicker">UMD · Stats court · Terps edition</span>
+      <h1>The People v. the Cookie Claim</h1>
+      <p><b>Manager Crumble</b> (a fictional villain) runs the cookie counter at the Y. He swears the average Terp eats only <b>40 cookies</b> a semester, so he can cut the cookie order and pocket the savings. Students smell a fib. <b>You are the judge.</b> The evidence: one random group of students. The question: is the evidence strong enough to throw out his claim? And because our Terps are simulated, we also have the security tape, so we can check whether each verdict was actually right.</p>
+    </div>
+  </header>
+  <div class="flagband" aria-hidden="true"></div>
+
+  <!-- RECAP -->
+  <section class="card" aria-labelledby="h-recap">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Previously on The Cookie Question</div>
+    <h2 id="h-recap">One interview, two jobs: estimate the truth, or put a claim on trial</h2>
+    <div class="story"><span class="ico" aria-hidden="true">🍪</span><div><p>Last time we didn’t know how many cookies a Terp eats, so we used one random interview to <b>estimate</b> it: a single best guess x̄ (the <b>point estimate</b>) plus a <b>confidence interval</b> showing how far off that guess might be. Nobody had made a claim; we just wanted the number.</p><p>Now Manager Crumble shows up with a number of his own. We use the <b>very same kind of interview</b>, but its job changes: instead of “what is μ?”, we ask “<b>does his number survive what we saw?</b>” The interview becomes <b>evidence</b> in a trial.</p></div></div>
+    <div class="recap">
+      <div class="rcard" style="--c:var(--w1,#8A4E14)"><span class="tag2">Last time · estimation</span>
+        <p class="q">“About how many cookies does a Terp eat?”</p>
+        <div>Start from the data. x̄ is our best guess for μ, and the CI is the range of values for μ that fit the data.</div>
+        <div class="num" id="recEst"></div></div>
+      <div class="mid" aria-hidden="true"><span class="one">🍪</span>same interview,<br>same numbers</div>
+      <div class="rcard" style="--c:var(--red)"><span class="tag2">This time · hypothesis test</span>
+        <p class="q">“Is Crumble’s claim believable, given what we saw?”</p>
+        <div>Start from the claim. Pretend μ = μ₀ and ask how surprising our x̄ would be. x̄ is now the evidence we weigh.</div>
+        <div class="num" id="recTest"></div></div>
+    </div>
+    <div class="narr" id="recLink" style="margin-top:12px"></div>
+    <div class="pro"><span class="k">Is it fair to say the interview “stops being an estimate and becomes an observation”?</span>
+      <p><b>Almost.</b> x̄ is the same number either way, and it is always both an estimate of μ <i>and</i> a random observation. What changes is the question we ask of it:</p>
+      <p><b>Estimation</b> asks what x̄ tells us about μ, and reports x̄ ± z*·SE.</p>
+      <p><b>Testing</b> fixes a hypothesized value μ₀ and treats x̄ as the observed value of a random variable, then asks how unusual it is under H₀: z = (x̄ − μ₀)/SE and its p-value.</p>
+      <p>Both use the same sampling distribution and the same SE, which is why a two-sided test at level α and a (1 − α) CI always agree (Step 3 shows this).</p></div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="card" aria-labelledby="h-claim">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 1 · The accusation</div>
+    <h2 id="h-claim">Manager Crumble’s claim goes on trial</h2>
+    <div class="story"><span class="ico" aria-hidden="true">⚖️</span><div><p>In this courtroom the <b>claim is presumed honest</b> until the evidence proves otherwise, just like “innocent until proven guilty.” We don’t get to convict him because we dislike him; we need evidence that would be <b>hard to explain if he were telling the truth</b>.</p><p>So the burden of proof is on the accusation. That’s why there are only two possible verdicts: <b>guilty</b> (the evidence knocks his claim down) or <b>not guilty</b> (it doesn’t). There is no verdict called “proven honest.”</p></div></div>
+    <div class="grid2" style="margin-top:10px">
+      <div>
+        <div class="mini" style="font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px">The charge sheet</div><div class="box"><div class="hyp" id="hypBox"></div></div>
+        <p class="note" style="margin-top:8px"><b>H₀</b> is Crumble’s claim (presumed honest). <b>Hₐ</b> is the accusation: what we conclude if the evidence is strong enough.</p>
+        <div class="pro"><span class="k">Statistician’s wording</span><p>H₀ (null hypothesis) is assumed true for the purpose of the test; we look for evidence against it. Hₐ (alternative hypothesis) is supported only if the data provide convincing evidence against H₀. The possible decisions are <b>reject H₀</b> or <b>fail to reject H₀</b>.</p></div>
+      </div>
+      <div class="god" id="godCard">
+        <h3>📼 The security tape (God’s view)</h3>
+        <div class="godTxt">
+          <p style="margin:2px 0 6px">We built all 10,000 students ourselves, so we know the real answer: <b class="num" style="font-size:20px">μ = <span id="muTrue"></span> cookies</b> (σ = <span id="sigTrue"></span>).</p>
+          <p style="margin:0" id="godClaim"></p>
+        </div>
+        <p class="mini" style="margin:6px 0 0">Real courts never get this tape. Turn it off in the bar below to see the trial the way a real researcher would.</p>
+      </div>
+    </div>
+    <h3 style="margin:16px 0 2px">Court words ⇄ statistics words</h3>
+    <div class="tablewrap"><table class="dict">
+      <tr><th>In the courtroom</th><th>In statistics</th><th>What it means here</th></tr>
+      <tr><td>Presumed honest</td><td>H₀ assumed true</td><td>We start by assuming Crumble’s number is right.</td></tr>
+      <tr><td>The accusation</td><td>Hₐ</td><td>Terps eat a different number (or more, or fewer) than he says.</td></tr>
+      <tr><td>The evidence</td><td>one random sample, x̄</td><td>The average cookie count of the students we question.</td></tr>
+      <tr><td>“Beyond reasonable doubt”</td><td>significance level α</td><td>How rare the evidence must be (if he were honest) before we convict. Set <i>before</i> the trial.</td></tr>
+      <tr><td>How damning is it?</td><td>p-value</td><td>If he were honest, how often would luck alone produce evidence at least this damning?</td></tr>
+      <tr><td>Guilty</td><td>reject H₀</td><td>The evidence is convincing; his claim is thrown out.</td></tr>
+      <tr><td>Not guilty</td><td>fail to reject H₀</td><td>Not enough evidence. It does <b>not</b> mean he was honest.</td></tr>
+      <tr><td>Convicting an honest manager</td><td>Type I error</td><td>Rejecting a true H₀. Happens about α of the time when he’s honest.</td></tr>
+      <tr><td>A lying manager walks free</td><td>Type II error</td><td>Failing to reject a false H₀.</td></tr>
+      <tr><td>The security tape</td><td>“God’s view”</td><td>The true μ. Only a simulation has it.</td></tr>
+    </table></div>
+  </section>
+
+  <div class="controls" role="group" aria-label="Test settings">
+    <div class="cgroup"><label class="clab" for="mu0">Claim μ₀</label><input type="range" id="mu0" min="25" max="75" step="0.5" value="40"><span class="mu0v" id="mu0v">40</span></div>
+    <div class="cgroup"><span class="clab">n</span><div class="seg" id="nSeg"></div></div>
+    <div class="cgroup"><span class="clab">α</span><div class="seg" id="aSeg"></div></div>
+    <div class="cgroup"><span class="clab">Hₐ</span><div class="seg" id="altSeg"></div></div>
+    <div class="cgroup"><button id="newSample" class="primary">🍪 New interview (new evidence)</button><span class="mini" id="seedLab"></span></div>
+    <label class="toggle"><input type="checkbox" id="godToggle" checked>📼 Security tape</label>
+  </div>
+
+  <!-- STEP 2 -->
+  <section class="card" aria-labelledby="h-sample">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 2 · The evidence</div>
+    <h2 id="h-sample">We question a random group of Terps. How far is their average from his claim?</h2>
+    <div class="story"><span class="ico" aria-hidden="true">🔎</span><div><p>We pick <span id="nTxt"></span> students at random and count their cookies. Their average is our evidence. Even if Crumble were honest, a random group would never land <i>exactly</i> on his number: some groups happen to include big eaters, some don’t. So the real question is not “is there a gap?” but <b>“is the gap bigger than luck usually produces?”</b></p><p>To judge that, we measure the gap in <b>standard errors (SE)</b>, the typical size of a luck-of-the-draw gap for a group this size. A gap of 1 SE is everyday luck; a gap of 3 SE is a lot to blame on luck. Press “New interview” to question a different group.</p></div></div>
+    <div class="stats">
+      <div class="stat"><span>sample mean x̄</span><b id="sX"></b></div>
+      <div class="stat"><span>sample SD s</span><b id="sS"></b></div>
+      <div class="stat"><span>SE = s/√n</span><b id="sSE"></b></div>
+      <div class="stat"><span>gap x̄ − μ₀</span><b id="sGap"></b></div>
+      <div class="stat"><span>z = gap / SE</span><b id="sZ"></b></div>
+      <div class="stat"><span>p-value</span><b id="sP"></b></div>
+    </div>
+    <div class="verdictRow"><div class="note" id="zWords" style="max-width:720px"></div><span class="pill" id="pill"></span></div>
+    <ul class="checks" id="checks"></ul>
+    <div class="pq">
+      <p class="lead">What the p-value means, in one question</p>
+      <blockquote>If Crumble were telling the truth, how often would a random group give evidence <u>at least as damning</u> as ours, just by luck?</blockquote>
+      <div class="pq3">
+        <div><h4><i>1</i>Give him the benefit of the doubt</h4>Imagine a world where he’s honest: the true average really is <b id="pq1mu"></b> cookies. There, the true gap is <b>zero</b>, and any gap a group shows is pure luck of the draw.</div>
+        <div><h4><i>2</i>Measure how damning our evidence is</h4>“Damning” (statisticians say <i>extreme</i>) means <b>far from his claim</b>, counted in standard errors, the typical size of a lucky gap:<span class="big" id="pq2z"></span><span id="pq2txt"></span> This is the same z-scale as the charts in Step 3.</div>
+        <div><h4><i>3</i>Ask: how often would luck do this?</h4>In the honest-manager world, the share of groups that land <span id="pq3dir"></span>:<span class="big" id="pq3p"></span><span id="pq3txt"></span></div>
+      </div>
+      <h3 style="margin:14px 0 2px">Don’t trust the formula? Build the honest-manager world.</h3>
+      <p class="note" style="margin:0 0 6px">We make Crumble honest by adding <span id="pqShift"></span> cookies to every one of our 10,000 students, so their average is exactly his claim (same skew, same smuggler). Then we question 1,000 random groups of the same size and see how often luck alone produces a gap as damning as ours.</p>
+      <div class="bscroll"><svg id="pqSvg" viewBox="0 0 760 214" role="img" aria-label="Histogram of z values from 1,000 interviews in a world where the claim is true, with the ones at least as extreme as ours highlighted"></svg></div>
+      <div class="legend" id="pqLeg" style="margin-top:2px"></div>
+      <div class="narr" id="pqSim" style="margin-top:6px"></div>
+      <div class="pro"><span class="k">Statistician’s wording</span><p>The <b>p-value</b> is the probability, computed assuming H₀ is true, of obtaining a test statistic at least as extreme as the one observed, where “extreme” is in the direction(s) specified by Hₐ.</p></div>
+      <p style="margin:12px 0 2px;font-weight:800">What the p-value is <u>not</u>:</p>
+      <ul class="pqNot" id="pqNot"></ul>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="card" aria-labelledby="h-three">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 3 · Three ways to weigh the evidence</div>
+    <h2 id="h-three">p-value, critical value, confidence interval: three judges, one verdict</h2>
+    <div class="story"><span class="ico" aria-hidden="true">👩‍⚖️</span><div><p>Imagine three judges looking at the same evidence. The first two start from “suppose Crumble is honest” and ask whether our group looks too far off. One measures it as a <b>rarity</b> (how often luck does this), the other as a <b>distance</b> (is it past the line we drew in advance). The third judge starts from the evidence instead and asks: <b>“which claims could an honest manager have made, given what we saw?”</b> They always reach the same verdict, and this step shows why.</p></div></div>
+    <p class="sub">All charts share the same cookie axis. <b>Methods 1 and 2 are the same test</b>: both draw the curve H₀ predicts for x̄ (centered at the claim μ₀) and ask whether our x̄ is too far out. Method 1 judges that by an <b>area</b>, Method 2 by a <b>position</b>. Method 3 flips the viewpoint and centers the curve on <b>our x̄</b>. <span id="godLegendTxt">The gold dotted line is the true μ, from God’s view.</span></p>
+    <div class="views">
+      <div class="pair">
+        <div class="vhead">Test view · Methods 1 and 2 both assume Crumble is honest (H₀ true)<small>Same curve: if μ really were μ₀, x̄ ~ N(μ₀, SE). Two ways to read it.</small></div>
+        <div class="pairCards">
+          <article class="method" id="m1"><div class="eyebrow">Method 1 · compare areas</div><h3>p-value</h3>
+            <p class="rule">If the claim were right, how often would x̄ land at least this many SEs away? That share is the shaded area. <b>Reject when it’s ≤ α.</b></p>
+            <svg id="c1" viewBox="0 0 360 252" role="img" aria-label="Null distribution with the p-value area shaded"></svg>
+            <div class="calc" id="k1"></div><div class="out" id="o1"></div></article>
+          <div class="linkb" aria-hidden="true"><b>⇔</b>same curve<br>same verdict</div>
+          <article class="method" id="m2"><div class="eyebrow">Method 2 · compare positions</div><h3>Critical value</h3>
+            <p class="rule">Mark the cutoff z* that leaves area α outside. <b>Reject when x̄ (or z) is past it.</b></p>
+            <svg id="c2" viewBox="0 0 360 252" role="img" aria-label="Null distribution with the rejection region shaded"></svg>
+            <div class="calc" id="k2"></div><div class="out" id="o2"></div></article>
+        </div>
+        <div class="bridge">
+          <h3>Put them on one curve: area ⇔ position</h3>
+          <p class="note" style="margin:0 0 4px">The red region starts at z* and has area α. The blue region starts at our z and has area p. Each position on the ruler has its own tail area, and the further out you start, the smaller the area.</p>
+          <div class="bscroll"><svg id="cB" viewBox="0 0 720 316" role="img" aria-label="Null curve in z units with the rejection region and p-value overlaid, and a ruler translating positions to tail areas"></svg></div>
+          <div class="eq">
+            <div class="a"><div class="k" style="color:var(--pv)">Method 1 asks</div><span id="eqA"></span></div>
+            <div class="b"><div class="k" style="color:var(--rej)">Method 2 asks</div><span id="eqB"></span></div>
+          </div>
+          <div class="narr" id="eqTxt" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="ciwrap">
+        <div class="vhead">CI view · start from the evidence<small>Centered on our x̄: which claims are believable?</small></div>
+        <article class="method" id="m3"><div class="eyebrow">Method 3 · CI view</div><h3>Confidence interval</h3>
+          <p class="rule">Build the interval of plausible μ’s around x̄. <b>Reject when μ₀ falls outside it.</b></p>
+          <svg id="c3" viewBox="0 0 360 252" role="img" aria-label="Sampling distribution centered at x-bar with the confidence interval shaded"></svg>
+          <div class="calc" id="k3"></div><div class="out" id="o3"></div></article>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--pv-soft);outline:1px solid var(--pv)"></i>p-value area</span>
+      <span><i class="sw" style="background:var(--rej-soft);outline:1px solid var(--rej)"></i>rejection region (area α)</span>
+      <span><i class="sw" style="background:var(--keep-soft);outline:1px solid var(--keep)"></i>confidence interval</span>
+      <span><i class="sw" style="background:var(--ink)"></i>x̄ (observed)</span>
+      <span><i class="sw" style="background:var(--red)"></i>μ₀ (claim)</span>
+      <span class="godOnly"><i class="sw" style="background:var(--truth)"></i>true μ</span>
+    </div>
+    <div class="narr" id="sameGap"></div>
+    <div class="twin" id="twin">
+      <h3>Same distance, two viewpoints: why the test and the CI can’t disagree</h3>
+      <div class="story" style="margin:6px 0 8px"><span class="ico" aria-hidden="true">📏</span><div><p>The test stands at <b>Crumble’s claim</b> and asks: “is the evidence within z* standard errors of me?” The CI stands at <b>our evidence</b> and asks: “is the claim within z* standard errors of me?” The distance from your house to school is the same as from school to your house, so the two questions always get the same answer. Drag the distance, or press sweep, and watch both rows flip at the same moment.</p></div></div>
+      <div class="twinCtl">
+        <label for="twinD" class="clab">Gap x̄ − μ₀</label>
+        <input type="range" id="twinD" min="-4.5" max="4.5" step="0.05" value="1">
+        <span class="dv" id="twinDv"></span>
+        <button type="button" id="twinPlay">▶ Sweep</button>
+        <button type="button" id="twinBack">Back to our evidence</button>
+      </div>
+      <div class="chips"><span class="chip" id="chipA"></span><span class="chip" id="chipB"></span></div>
+      <div class="bscroll"><svg id="twinSvg" viewBox="0 0 760 252" role="img" aria-label="Top row: the claim's ordinary zone with x-bar marked. Bottom row: the confidence interval around x-bar with the claim marked. Both use the same width."></svg></div>
+      <h3 style="margin:16px 0 2px">Coverage: what “95% confident” is really counting</h3>
+      <p class="note" style="margin:0 0 6px">Now put Crumble in the honest-manager world (his claim is the truth) and hold 50 trials. Each row is one random group: the dot is its average, the bar is its CI, and the shaded column is the claim’s “ordinary” zone. A trial’s CI misses the true claim <b>exactly when</b> its dot falls outside the zone. Same distance, same verdict, every row.</p>
+      <div class="bscroll"><svg id="covSvg" viewBox="0 0 760 430" role="img" aria-label="Fifty confidence intervals from a world where the claim is true; the ones that miss the claim are exactly the ones whose average lands outside the claim's ordinary zone"></svg></div>
+      <div class="narr" id="covTxt"></div>
+      <div class="pro"><span class="k">Statistician’s wording</span><p id="covPro"></p></div>
+    </div>
+    <div class="why">
+      <h3>Why do these rules work?</h3>
+      <p class="note" style="margin:0 0 4px">Three “but why?” questions every jury asks. Each answer updates with the settings bar.</p>
+      <details open>
+        <summary>1 · Why reject when p ≤ α? (and is it α or α/2?)</summary>
+        <div class="whyIn">
+          <div><ul id="whyA"></ul><div class="mathline" id="whyAmath"></div></div>
+          <svg id="whyAsvg" viewBox="0 0 380 210" role="img" aria-label="Null curve in z units with the alpha tails and the p-value tails labeled"></svg>
+        </div>
+      </details>
+      <details open>
+        <summary>2 · Why is “beyond z*” the rejection region?</summary>
+        <div class="whyIn">
+          <div><ul id="whyB"></ul></div>
+          <svg id="whyBsvg" viewBox="0 0 400 240" role="img" aria-label="Where x-bar lands if the claim is true versus if the claim is wrong, compared with the rejection region"></svg>
+        </div>
+      </details>
+      <details open>
+        <summary>3 · Why reject when μ₀ falls outside the CI?</summary>
+        <div class="whyIn">
+          <div><ul id="whyC"></ul></div>
+          <svg id="whyCsvg" viewBox="0 0 400 200" role="img" aria-label="The same distance measured from the claim and from x-bar"></svg>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="card" aria-labelledby="h-rules">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 4 · Reading the verdict</div>
+    <h2 id="h-rules">Guilty or not guilty: the decision rules, side by side</h2>
+    <div class="story"><span class="ico" aria-hidden="true">🔨</span><div><p>The bar for “guilty” (α) is set <b>before</b> the trial, so nobody can move it after seeing the evidence. If the evidence clears the bar, the claim is thrown out. If not, the case is dismissed, and Crumble walks out <b>not guilty</b>, which is not the same as <b>proven honest</b>.</p></div></div>
+    <div class="tablewrap"><table class="t">
+      <tr><th>Hₐ</th><th>p-value</th><th>Critical value: reject if…</th><th>CI: reject if…</th></tr>
+      <tr id="r-two"><td>μ ≠ μ₀</td><td class="mono">2·P(Z ≥ |z|)</td><td>|z| ≥ z<sub>α/2</sub> (1.96 at α = .05)</td><td>μ₀ is outside the (1 − α) CI</td></tr>
+      <tr id="r-greater"><td>μ &gt; μ₀</td><td class="mono">P(Z ≥ z)</td><td>z ≥ z<sub>α</sub> (1.645 at α = .05)</td><td>μ₀ is below the one-sided lower bound x̄ − z<sub>α</sub>·SE</td></tr>
+      <tr id="r-less"><td>μ &lt; μ₀</td><td class="mono">P(Z ≤ z)</td><td>z ≤ −z<sub>α</sub> (−1.645 at α = .05)</td><td>μ₀ is above the one-sided upper bound x̄ + z<sub>α</sub>·SE</td></tr>
+    </table></div>
+    <p class="mini" style="margin-top:6px">Highlighted row = your current Hₐ. For a mean, the test and the CI use the same SE = s/√n, so the three methods always agree. (For a proportion they can split right at the edge, because the test’s SE uses p₀ and the CI’s uses p̂.) With small n, use t in place of Z.</p>
+    <div class="say">
+      <div style="--c:var(--rej)"><h3>Reject H₀ <span class="note">· court: “guilty”</span></h3>
+        <ul><li>p-value ≤ α, or z in the rejection region, or μ₀ outside the CI.</li>
+        <li>Statistician’s wording: “The data provide convincing evidence (at the α level) that the average Terp eats <span class="haWord"></span> μ₀ cookies.”</li></ul></div>
+      <div style="--c:var(--keep)"><h3>Fail to reject H₀ <span class="note">· court: “not guilty”</span></h3>
+        <ul><li>p-value &gt; α, or z outside the rejection region, or μ₀ inside the CI.</li>
+        <li>Statistician’s wording: “The data do <b>not</b> provide convincing evidence (at the α level) that the average differs from μ₀.”</li>
+        <li>Never say: <span class="no">“we accept H₀”</span>, <span class="no">“the average is μ₀”</span>, <span class="no">“H₀ is true.”</span> Step 5 shows why.</li></ul></div>
+    </div>
+    <div class="narr" id="yourConclusion"></div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="card" aria-labelledby="h-accept">
+    <div class="step"><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookie"/></svg>Step 5 · Why “not guilty” ≠ “innocent”</div>
+    <h2 id="h-accept">“Fail to reject” means “not ruled out,” not “proven true.” The security tape proves it.</h2>
+    <div class="story"><span class="ico" aria-hidden="true">📼</span><div><p>Real courts never find out whether a “not guilty” defendant actually did it. We can, because we have the security tape: the true average is 42.20 cookies. So we can watch Crumble walk free while lying, over and over, and see exactly why a statistician never says “we accept H₀.”</p></div></div>
+
+    <div class="part">
+      <h3><span class="pn">1</span>One body of evidence, many claims it can’t convict</h3>
+      <p class="sub" style="margin-bottom:6px">Keep the same interview and test every possible claim from 25 to 75 cookies. Green = we would fail to reject that claim; red = we would reject it.</p>
+      <svg id="ruler" viewBox="0 0 900 150" role="img" aria-label="Every claimed mean colored by whether this sample rejects it"></svg>
+      <div class="narr" id="rulerTxt"></div>
+    </div>
+
+    <div class="part">
+      <h3><span class="pn">2</span>An unreliable witness: what if the smuggler lands in our group?</h3>
+      <p class="sub" style="margin-bottom:6px">One student in the population claims <b>300 cookies</b>. Force him into our sample and watch x̄ jump, s balloon, and the CI stretch until even a wild claim can’t be rejected. The switch changes the interview everywhere on the page (Steps 2–5).</p>
+      <div class="btns" style="display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 10px">
+        <button id="smugBtn" type="button" aria-pressed="false">🍪 Put the smuggler in our interview</button>
+        <button id="smugDemo" type="button" class="primary">Try the extreme case: n = 25, claim 65</button>
+      </div>
+      <svg id="smugSvg" viewBox="0 0 900 210" role="img" aria-label="Confidence interval without and with the smuggler, compared with the claim and the true mean"></svg>
+      <div class="tablewrap"><table class="t" id="smugTab"></table></div>
+      <div class="narr" id="smugTxt"></div>
+    </div>
+
+    <div class="part">
+      <h3><span class="pn">3</span>What the verdict does and doesn’t say</h3>
+      <div class="court">
+        <div><b class="big">“Not guilty” ≠ “innocent”</b>A “not guilty” verdict only means the evidence wasn’t strong enough. Crumble might still be lying, and with a small group of witnesses he often gets away with it.</div>
+        <div><b class="big">“Fail to reject” ≠ “H₀ is true”</b>Our sample couldn’t rule out μ₀, and it couldn’t rule out lots of nearby values either (part 1). An unreliable witness like the smuggler can collapse the case without proving anything.</div>
+      </div>
+      <div class="pro"><span class="k">Statistician’s wording</span><p>Failing to reject H₀ is not evidence that H₀ is true. It means the data are consistent with H₀ (and with other values in the confidence interval). Conclude: “The data do not provide convincing evidence for Hₐ,” never “we accept H₀.”</p></div>
+    </div>
+
+    <div class="part">
+      <h3><span class="pn">4</span>Hold 200 trials and check every verdict against the tape</h3>
+      <p class="sub" style="margin-bottom:6px">200 different courts, each with its own random group of n students, each running the same test against the current claim. Try the claims below, then change n. The gold outline in the table marks where your one interview from Step 2 lands.</p>
+      <div class="presets" id="claimPresets"></div>
+      <div class="grid2">
+        <div>
+          <div class="dots" id="dots" role="img" aria-label="200 interviews colored by decision"></div>
+          <div class="legend"><span><i class="sw" style="background:var(--rej)"></i>rejected H₀</span><span><i class="sw" style="background:#BFE3CB;outline:1px solid var(--ink)"></i>failed to reject</span></div>
+        </div>
+        <div>
+          <table class="matrix" id="matrix" aria-label="Truth versus decision for 200 interviews"></table>
+        </div>
+      </div>
+      <div class="narr" id="simTxt"></div>
+    </div>
+  </section>
+
+  <footer><svg class="ck" viewBox="0 0 100 100" aria-hidden="true"><use href="#cookieBite"/></svg><span>Same simulated population as the Cookie Question demo: 10,000 students, μ = 42.20, σ = 26.11, right-skewed with one 300-cookie smuggler. Tests use z = (x̄ − μ₀)/(s/√n) to match the class CLT recipe. Works offline. Go Terps!</span></footer>
+</main>
+
+<script id="pop" type="application/json">{"mu":42.2015,"sigma":26.1099,"cookies":[300,72,70,44,90,53,49,27,18,21,27,33,16,56,49,59,55,36,3,47,64,20,24,29,32,20,9,61,25,65,54,30,24,48,20,7,54,31,40,26,42,13,40,50,30,49,31,34,52,35,19,9,77,38,104,46,19,31,11,37,31,36,22,70,54,29,49,42,63,27,51,71,17,66,52,81,48,11,40,61,55,18,16,13,88,53,59,44,85,21,35,35,6,25,42,47,37,31,73,29,13,53,32,11,27,24,48,8,15,27,17,33,36,27,24,18,100,34,105,32,16,28,61,21,26,45,29,85,55,53,22,9,14,109,36,45,32,49,8,100,62,68,11,22,8,32,77,18,65,34,44,19,60,89,14,14,23,44,85,81,27,80,26,48,34,59,35,14,9,67,8,11,7,6,41,30,12,31,7,106,8,103,47,85,28,64,34,14,39,17,13,22,32,62,37,44,32,62,36,32,49,43,25,48,13,57,86,41,25,82,10,60,13,72,20,86,29,60,45,62,25,65,58,14,95,28,79,36,49,14,65,60,24,46,71,78,56,4,81,62,28,17,65,56,42,39,17,53,60,34,26,22,14,34,30,9,40,38,15,77,52,43,30,48,32,30,14,97,7,52,49,22,6,41,17,61,45,71,13,30,31,65,16,50,48,59,125,30,18,48,32,41,31,7,35,19,25,93,21,82,38,5,26,52,42,9,58,33,31,25,70,55,46,24,10,157,30,19,52,32,18,29,45,73,10,66,21,33,31,23,69,50,36,89,8,47,13,28,37,181,13,17,43,17,46,85,5,61,81,9,70,23,138,21,40,25,17,67,19,34,29,33,36,72,15,37,12,15,24,32,41,71,49,27,26,47,34,72,32,23,100,12,25,27,80,60,71,31,64,28,16,58,15,15,24,83,31,43,18,25,74,85,46,50,22,97,39,38,42,26,26,25,3,28,47,34,23,88,52,13,71,16,73,11,49,28,91,27,57,111,40,76,67,34,36,104,12,12,8,43,15,19,11,64,12,24,14,12,60,80,14,42,21,19,35,20,49,51,27,43,27,34,15,8,36,28,81,71,29,34,57,61,27,37,64,46,18,21,15,19,57,47,26,31,14,61,13,59,29,29,49,64,95,60,63,88,22,71,37,13,78,75,33,10,37,26,52,53,6,44,58,10,59,103,13,32,59,41,30,14,13,102,23,30,47,67,24,43,53,51,97,21,89,62,22,20,106,41,14,12,3,65,79,94,39,17,4,7,51,108,4,42,21,69,28,38,59,42,26,34,33,44,28,15,53,74,20,78,43,40,33,23,26,40,13,26,51,40,53,16,59,39,38,30,20,58,29,95,53,110,43,13,16,14,67,98,47,5,30,29,104,35,10,20,33,25,40,16,28,107,23,30,31,23,31,29,44,24,9,33,22,106,45,58,15,73,19,43,47,98,35,46,36,24,21,37,18,32,52,24,23,63,37,27,63,54,20,66,65,17,8,6,40,28,61,22,95,30,56,22,98,27,82,41,11,21,10,21,25,40,36,1,29,7,34,37,23,16,36,44,98,28,21,61,61,18,66,18,53,54,55,26,38,57,17,115,177,14,70,25,38,42,53,14,34,4,85,63,18,10,13,31,38,44,15,46,18,36,52,42,48,9,15,24,18,32,26,22,53,52,18,20,72,33,17,56,92,48,15,73,20,71,3,68,55,23,36,35,31,65,29,21,58,39,6,59,47,29,47,79,61,69,27,16,31,99,38,90,28,25,69,13,27,25,94,24,75,7,47,38,37,21,70,27,36,76,26,38,33,13,19,24,32,23,44,23,33,37,46,27,25,113,48,94,75,24,62,107,72,17,36,85,13,10,32,16,70,76,38,18,17,21,52,85,15,14,42,50,35,31,30,103,100,38,31,21,77,44,65,33,45,46,20,20,51,22,42,72,15,36,14,16,11,49,23,101,34,77,20,10,60,16,33,10,21,7,84,87,62,37,21,33,27,22,17,69,13,60,25,7,39,29,12,20,17,97,20,72,48,14,28,12,63,40,65,32,36,7,11,63,51,42,55,36,53,80,38,28,18,16,87,114,23,84,25,36,64,71,71,61,42,92,99,72,29,98,22,19,60,54,35,104,32,33,38,128,41,22,74,51,78,28,78,68,37,36,57,28,28,46,132,42,8,61,22,36,49,24,22,40,64,91,44,25,7,73,37,25,21,16,33,58,16,87,13,72,32,78,11,12,14,29,32,30,25,43,101,13,82,29,29,84,30,45,60,12,41,23,14,26,12,42,55,46,86,36,15,41,76,65,39,73,37,80,31,73,46,28,18,67,42,51,52,27,68,130,21,34,17,17,59,41,52,42,44,54,101,36,36,43,7,23,56,26,27,40,107,64,8,60,42,36,54,61,19,23,106,45,33,3,13,88,73,42,63,53,53,58,79,58,55,53,22,31,23,5,5,10,61,32,47,43,26,41,117,38,34,24,102,30,56,5,69,17,8,1,21,23,88,27,8,86,29,86,18,80,42,11,26,93,67,4,77,61,38,55,48,33,61,38,19,40,34,123,25,22,118,50,87,48,5,42,82,18,14,57,39,10,34,25,20,39,70,52,42,75,16,59,35,73,37,38,33,76,87,43,38,80,32,78,22,9,50,26,113,25,22,136,13,19,59,62,50,50,16,59,29,53,56,67,25,71,69,66,22,57,64,136,24,15,35,12,49,30,38,49,32,24,53,22,35,2,36,71,30,25,37,82,31,38,68,45,11,61,33,14,73,39,56,19,8,34,17,21,21,29,22,87,52,77,73,27,28,58,19,80,74,47,33,54,28,15,73,55,26,52,29,18,83,47,57,46,25,34,26,18,12,103,75,78,95,42,20,20,93,28,87,44,48,100,20,27,32,85,30,25,44,13,47,30,39,49,141,64,29,82,32,67,55,43,42,46,33,47,15,15,28,52,42,62,15,27,63,20,35,45,46,13,38,20,42,54,21,22,70,10,6,46,7,20,56,12,113,48,69,35,24,38,30,29,48,104,27,71,30,89,21,33,17,9,76,26,118,37,8,33,75,35,82,34,38,20,45,15,46,24,26,66,15,44,54,6,33,21,51,6,16,29,58,44,36,63,59,56,72,46,23,70,34,30,16,26,56,60,25,35,48,10,24,29,19,48,22,25,92,79,28,25,28,20,41,53,39,43,31,34,59,108,24,40,29,71,28,17,15,36,30,39,20,44,7,38,32,98,12,28,60,11,30,12,26,38,97,53,6,45,31,47,28,34,67,16,99,84,20,24,69,42,21,83,57,68,86,27,18,45,23,23,43,15,35,77,52,49,8,36,39,111,22,15,43,34,35,41,40,36,33,10,29,15,36,24,10,59,48,11,10,35,12,90,15,73,27,36,77,48,37,90,47,52,35,30,26,29,39,46,47,65,47,11,46,6,53,27,44,23,41,15,68,41,56,29,34,15,23,32,41,22,38,47,37,7,6,74,23,17,56,84,62,47,4,27,17,51,50,49,54,41,21,24,16,38,75,5,19,27,60,6,17,30,45,10,37,35,66,32,135,50,24,51,46,12,31,15,38,59,42,44,13,37,28,26,31,4,38,14,40,20,96,36,25,90,35,43,31,26,85,84,73,75,31,58,24,62,66,28,24,70,109,17,29,27,47,74,65,34,61,45,65,19,65,39,43,83,36,53,48,57,27,84,47,59,87,37,40,64,34,44,23,50,11,55,21,58,30,26,16,24,39,43,24,40,65,27,65,49,35,37,32,41,39,74,58,34,6,52,37,31,41,21,27,12,41,44,10,24,22,49,41,86,16,82,36,59,42,29,77,81,19,35,30,24,72,61,33,56,77,82,32,26,16,24,46,28,125,81,52,37,24,37,13,40,57,75,34,39,70,4,104,12,78,34,28,79,71,38,52,42,42,38,55,31,33,25,70,26,69,79,41,7,39,11,32,72,43,83,32,46,24,21,66,45,37,62,35,57,55,20,24,60,25,7,52,58,46,42,60,54,41,39,74,137,37,32,37,36,36,49,70,62,31,78,7,52,14,65,20,87,53,134,53,27,35,75,47,96,31,44,27,42,27,12,46,14,33,39,49,42,41,28,51,48,54,61,63,35,96,50,23,85,59,40,45,33,33,67,67,23,29,7,33,44,21,36,10,118,44,37,44,55,32,66,47,32,64,53,57,70,42,39,47,97,124,20,69,18,70,24,22,28,18,29,41,33,22,145,46,20,38,42,85,22,27,46,146,26,119,61,13,26,47,69,3,29,16,51,29,40,58,31,32,67,19,29,20,36,64,94,73,45,11,11,33,31,24,27,20,80,60,5,25,117,53,45,46,47,61,49,10,24,66,27,39,54,26,48,45,41,63,16,57,26,31,47,31,50,49,73,17,51,45,21,28,26,49,22,38,60,31,25,35,11,28,54,52,48,66,24,3,54,25,77,70,68,35,40,72,85,80,27,40,10,10,21,104,70,82,31,67,43,109,36,22,17,9,37,61,32,28,73,61,55,75,15,22,21,7,62,5,39,82,94,55,79,64,20,76,100,22,40,29,53,15,43,41,67,13,67,80,14,25,24,15,28,34,23,39,47,84,120,47,16,68,20,17,33,52,34,51,84,17,67,105,25,22,44,24,27,54,41,37,93,11,34,27,3,49,31,29,21,26,20,62,71,66,52,41,40,97,24,43,26,11,6,93,80,13,88,16,60,39,69,64,30,31,9,31,88,50,14,35,60,2,25,44,51,20,24,48,50,12,33,44,23,48,16,112,26,68,72,46,84,60,9,28,94,45,47,20,51,48,26,36,60,23,54,44,18,11,31,25,40,25,32,54,70,41,31,46,24,22,98,37,74,73,19,33,26,66,19,86,9,34,38,46,58,42,39,31,28,27,79,47,65,69,32,104,71,35,64,101,92,32,47,43,21,61,48,60,40,11,29,46,25,22,105,20,7,25,26,66,45,13,24,22,19,102,104,53,63,13,35,58,65,16,37,69,22,13,47,47,50,89,39,43,13,23,67,94,11,69,21,16,22,86,18,93,94,54,17,34,20,34,39,92,36,32,10,30,39,28,10,54,30,22,112,63,6,20,25,37,23,11,26,24,64,63,26,48,38,38,32,35,98,36,23,10,99,25,35,11,57,75,52,70,33,10,31,45,11,28,101,42,66,75,43,89,43,55,44,68,130,61,21,27,26,32,54,36,57,37,23,16,101,20,51,24,20,27,42,18,37,39,23,41,17,9,54,18,10,22,17,18,27,48,33,67,74,43,18,23,82,48,49,38,25,50,76,16,50,24,27,13,24,19,37,22,18,57,32,17,73,31,95,30,20,37,36,44,14,14,55,9,46,10,18,86,18,20,49,75,25,25,62,55,20,31,33,51,18,14,76,19,23,52,53,13,22,11,32,11,29,94,37,56,57,42,64,49,47,24,28,17,19,16,18,14,8,118,27,31,42,78,20,6,29,29,39,44,28,26,38,76,43,25,8,30,25,44,53,28,10,12,22,25,35,37,50,44,23,34,100,27,149,10,18,40,37,31,56,31,17,62,31,29,28,55,13,49,49,39,42,68,6,84,22,5,18,68,28,37,44,72,28,46,114,3,33,14,9,106,6,15,36,85,36,44,21,15,25,45,13,39,39,54,83,69,31,50,46,76,63,47,44,62,52,15,74,78,113,34,66,17,35,8,96,49,16,29,35,31,107,70,11,11,7,6,52,8,19,25,77,36,30,17,22,30,16,50,49,54,68,5,100,25,62,75,76,15,49,15,9,64,50,71,50,51,82,19,47,32,98,121,34,47,22,74,41,39,43,36,48,31,30,24,51,33,66,19,108,47,39,47,9,110,47,17,13,18,42,25,48,72,43,19,13,40,22,38,4,84,28,54,13,63,29,41,51,22,16,42,16,112,105,28,113,32,15,30,15,43,28,8,53,17,87,42,14,59,72,27,67,58,28,20,21,100,56,44,13,21,74,22,105,20,20,19,47,48,63,28,42,42,40,42,27,74,65,29,37,73,14,71,25,26,20,16,21,39,38,41,40,50,9,28,24,51,9,75,47,51,58,29,57,33,42,46,9,28,17,56,20,18,7,37,6,20,19,58,50,82,21,71,10,34,52,33,14,50,18,26,33,24,105,49,24,25,71,25,18,31,89,22,29,52,47,75,17,6,19,46,70,19,26,18,25,76,34,29,31,55,106,76,67,34,12,26,34,28,41,51,28,84,32,72,80,19,50,49,16,82,67,92,24,32,25,30,44,31,68,85,36,77,30,12,30,128,40,8,62,31,63,54,31,6,54,54,58,42,15,49,67,37,22,29,21,34,75,31,64,10,30,55,17,67,28,92,37,8,31,21,13,22,31,36,37,21,14,81,27,7,17,39,22,30,16,25,35,26,52,15,22,77,39,33,61,46,47,96,43,41,25,80,38,39,33,35,26,73,61,21,50,72,63,31,107,68,75,20,33,40,6,32,53,53,76,87,21,23,79,41,21,119,6,12,23,38,55,34,28,16,94,83,41,79,60,44,62,33,117,39,18,76,12,28,66,23,70,68,26,36,21,20,16,64,22,14,70,64,29,16,37,37,20,47,91,6,27,10,59,67,40,51,76,43,79,41,16,76,19,12,48,28,8,40,94,52,44,21,76,57,19,83,41,34,20,31,50,41,7,52,101,88,99,40,55,78,45,34,36,57,15,62,47,28,7,25,38,63,18,25,68,51,49,56,12,26,22,11,54,48,37,36,72,54,23,47,32,34,58,56,37,20,32,28,22,13,61,102,22,108,21,17,87,67,36,7,41,86,84,37,25,9,18,85,71,12,40,80,30,51,67,38,19,40,27,16,23,27,21,47,18,11,12,45,43,70,33,16,17,69,38,11,33,29,20,61,108,128,28,22,12,54,37,56,8,76,20,17,66,13,3,5,28,18,38,55,54,27,23,61,72,41,95,10,44,22,33,55,20,14,94,48,29,15,64,35,30,6,36,55,40,69,62,59,49,55,4,61,49,27,53,55,41,28,35,68,29,51,32,15,24,43,22,45,34,128,33,7,19,19,82,20,48,65,22,29,68,122,22,53,69,57,47,46,43,48,72,12,16,57,10,41,57,46,26,31,83,72,38,20,57,14,42,18,27,30,41,8,17,17,20,88,43,52,123,45,8,64,14,17,57,35,61,63,34,11,51,58,60,19,37,31,45,39,20,55,94,43,81,19,12,63,38,16,12,74,71,62,61,47,24,33,61,32,114,46,89,45,46,12,52,3,8,43,60,39,36,19,54,26,11,29,53,12,52,35,36,31,19,11,41,72,25,71,10,56,82,32,22,97,28,20,27,14,44,37,21,17,40,51,34,17,36,35,81,25,25,38,17,43,31,47,82,23,45,26,90,43,18,41,75,45,80,6,48,27,58,41,19,56,56,34,37,22,24,35,37,85,41,70,32,5,56,77,38,77,23,68,19,74,5,60,56,32,42,18,41,49,38,17,21,42,81,76,28,24,62,21,111,56,27,86,13,31,81,20,64,35,80,39,44,42,61,44,28,53,13,19,45,32,38,14,33,38,55,25,95,21,96,21,72,51,5,21,36,92,53,96,4,172,48,38,28,9,69,7,13,44,33,27,16,49,30,108,46,15,35,22,49,23,9,16,51,23,36,26,27,48,29,13,57,35,12,11,24,92,25,82,26,44,55,10,40,75,61,106,11,39,24,42,67,12,20,24,30,20,17,17,45,46,24,31,35,25,64,26,57,82,25,39,127,30,111,32,24,73,35,40,28,22,49,67,62,58,52,46,65,10,81,100,21,46,34,29,40,94,33,97,42,40,32,80,71,144,40,45,49,27,72,27,18,64,11,22,19,16,18,70,54,93,64,67,93,22,18,45,81,20,30,37,45,58,22,33,34,50,23,31,24,72,72,16,6,17,13,51,41,45,9,25,26,105,29,73,26,45,40,33,14,49,32,35,11,28,73,25,77,91,70,42,19,65,72,31,53,23,35,77,63,18,53,25,93,25,20,24,45,25,37,30,21,33,45,55,32,91,42,71,15,35,40,36,34,29,66,57,35,117,49,71,125,32,19,23,27,13,67,33,68,61,50,56,15,26,32,26,32,86,46,23,19,44,48,79,39,79,69,35,70,21,37,42,39,85,129,46,55,45,7,68,60,38,27,13,11,59,54,14,79,14,12,26,50,75,91,57,51,28,45,54,36,14,42,49,58,43,32,48,12,16,69,26,21,74,55,24,72,103,78,13,29,42,20,85,24,21,86,60,78,39,33,6,51,28,24,21,12,64,13,40,21,56,48,92,45,19,82,48,38,14,69,71,70,59,68,24,83,62,35,61,6,36,32,56,40,20,45,46,32,26,35,21,28,27,78,44,19,53,45,24,29,32,20,70,72,50,26,75,69,41,140,36,27,25,12,40,71,111,52,22,40,53,11,28,24,42,20,41,33,11,60,30,18,21,17,61,59,38,64,22,22,13,98,28,37,150,17,16,40,38,28,108,50,36,40,37,56,33,137,100,19,62,37,33,47,29,48,97,20,61,37,56,25,74,51,31,9,77,32,12,64,32,64,27,20,51,53,54,35,31,26,11,40,20,32,35,9,36,18,11,69,19,37,78,34,30,27,33,9,14,42,98,23,48,37,51,69,48,10,14,21,37,82,47,50,13,49,27,23,25,31,17,37,20,11,39,22,107,4,51,121,22,3,31,20,8,11,65,41,31,66,23,50,9,35,49,48,16,64,17,120,69,37,35,52,84,11,21,34,36,42,36,121,57,13,23,18,23,47,24,25,33,21,66,39,33,67,6,12,10,62,39,33,35,29,25,62,16,116,20,30,65,11,53,66,16,29,38,47,40,14,32,79,72,9,70,16,40,26,33,19,64,21,21,26,73,30,62,24,21,28,92,126,11,56,77,54,17,36,15,77,103,21,41,53,65,42,3,36,53,94,33,73,44,20,27,68,30,40,23,77,85,10,12,41,40,33,68,20,92,38,9,35,12,58,26,67,122,42,48,46,32,22,30,25,49,130,40,159,43,67,26,17,23,15,35,7,19,128,3,14,13,45,32,14,49,29,25,39,66,75,11,49,34,61,32,46,58,23,22,29,50,69,76,40,22,34,83,41,21,43,48,45,28,41,18,72,15,29,48,44,65,110,51,35,12,31,38,22,43,59,32,25,23,95,34,37,14,64,64,38,47,14,110,44,50,90,19,61,27,29,84,42,5,81,78,19,21,57,48,25,33,11,34,41,54,62,24,63,41,45,64,21,31,18,86,6,53,73,19,46,42,88,18,85,28,19,58,10,60,66,38,19,34,70,3,35,64,28,82,29,20,26,73,61,26,116,28,55,54,28,107,103,37,89,50,30,16,169,69,48,61,17,9,22,25,15,24,18,14,194,40,16,58,17,50,19,10,26,62,47,20,43,50,74,51,19,27,46,119,64,58,60,53,11,21,63,20,60,16,44,37,47,18,75,53,15,22,72,14,17,152,33,56,14,70,50,41,27,21,34,32,66,43,71,148,14,17,54,24,22,56,51,74,41,15,32,9,45,15,36,35,20,26,100,27,14,17,47,36,17,19,32,13,19,34,21,47,50,35,22,75,15,25,7,21,8,23,49,22,41,49,7,49,88,19,54,23,40,21,90,27,50,99,9,5,27,29,99,93,19,20,21,21,37,32,7,19,72,71,28,52,26,79,58,22,34,16,69,59,66,31,71,63,41,14,69,38,25,6,34,26,21,42,19,39,63,99,31,50,56,23,19,14,71,39,75,26,80,51,39,61,57,40,22,30,16,34,7,34,7,46,26,90,51,100,48,35,18,30,30,33,35,18,52,23,37,48,39,21,10,35,62,27,18,36,14,11,24,14,78,31,70,61,41,87,15,56,36,25,21,25,97,40,36,67,77,24,26,36,45,30,46,26,31,110,46,43,57,51,54,41,23,57,10,86,38,23,13,44,9,36,82,29,32,61,28,7,49,32,49,40,25,15,18,51,45,45,31,48,47,32,17,8,39,20,58,25,35,19,73,21,17,79,78,54,26,77,29,26,41,44,5,61,30,13,39,40,52,28,69,85,24,83,22,23,46,21,118,5,14,98,10,14,34,32,83,76,18,119,20,18,49,32,16,31,37,48,29,30,23,52,46,50,31,49,43,81,35,36,21,28,57,60,68,69,48,45,31,26,68,60,39,75,50,52,8,35,46,42,5,79,43,37,15,22,48,106,121,69,43,49,49,63,83,50,39,54,34,43,18,28,34,64,90,22,10,82,61,39,60,72,40,40,39,47,11,17,38,18,31,18,55,29,97,33,80,24,47,30,54,43,44,64,18,25,62,38,14,31,49,10,26,40,16,38,55,23,81,59,137,22,25,54,25,14,26,62,28,84,82,13,30,36,38,37,66,23,39,74,18,79,7,50,80,19,12,39,104,86,46,81,10,17,37,26,54,128,31,19,41,21,38,41,148,47,30,79,119,68,33,26,34,42,15,37,84,38,20,39,29,66,34,14,86,59,36,28,19,40,60,10,11,74,36,72,59,61,41,16,31,19,43,27,53,39,98,65,11,21,32,7,106,25,18,20,41,32,75,18,8,55,35,44,94,40,40,100,24,17,45,23,17,10,73,9,31,88,89,8,27,98,16,29,68,63,10,13,34,57,54,14,36,50,19,19,41,40,32,39,23,94,23,82,57,17,24,48,97,18,28,9,23,47,22,70,30,13,106,18,84,100,55,17,26,44,30,31,97,30,48,116,39,51,107,68,21,22,59,45,25,26,24,21,20,20,25,59,103,74,49,20,49,18,8,54,37,56,50,63,17,45,20,11,41,10,43,57,62,46,58,11,47,34,38,10,32,25,23,113,52,36,60,36,34,10,25,25,33,46,45,21,61,33,52,14,80,33,21,16,78,121,44,55,4,16,16,34,20,32,95,63,46,100,76,13,40,41,26,25,85,11,44,9,10,23,18,34,16,80,65,60,71,15,25,36,32,46,33,16,37,21,34,13,36,83,30,41,19,48,1,15,37,23,17,29,55,43,12,26,29,53,34,55,42,51,32,64,37,15,25,30,24,27,24,47,42,109,85,7,25,48,54,25,48,30,32,98,43,30,44,18,29,36,50,22,74,17,49,21,16,32,45,85,11,5,9,19,17,6,26,54,37,31,122,46,66,45,72,28,34,21,28,40,38,28,55,30,23,45,49,26,72,12,76,48,32,26,88,19,68,45,6,68,68,34,34,14,135,40,20,30,52,16,80,56,34,67,20,57,37,127,43,9,33,27,16,2,24,12,33,12,119,33,69,35,9,55,50,39,25,43,10,58,29,23,51,14,20,34,29,73,38,16,32,27,26,59,42,35,45,10,59,42,66,38,58,20,21,40,33,159,44,111,97,101,17,5,24,55,59,47,15,39,125,26,17,38,34,70,28,43,28,75,25,103,12,12,64,8,88,30,103,33,42,8,35,23,62,10,35,3,20,66,46,39,90,36,54,34,67,57,38,38,18,34,46,31,42,64,8,89,24,5,20,21,112,29,44,12,85,41,4,29,19,59,94,93,42,70,24,9,8,17,51,22,41,29,10,51,75,29,51,13,48,19,17,73,32,20,69,13,22,36,49,14,30,58,63,25,39,48,53,105,8,35,24,41,33,54,8,84,29,32,29,14,46,29,28,36,57,6,29,16,29,56,49,18,17,12,21,22,18,54,27,21,30,28,46,38,30,94,81,35,40,88,43,19,41,59,46,18,75,18,30,25,31,30,17,8,16,49,51,19,44,25,73,49,62,21,42,48,37,12,61,32,41,43,13,15,36,53,30,29,34,15,68,106,19,75,146,11,39,16,49,63,23,81,33,16,35,73,18,62,27,23,51,29,54,104,9,68,29,28,23,6,13,39,64,26,59,25,39,68,78,20,37,60,25,4,23,18,47,61,54,46,24,47,32,37,43,11,47,11,65,23,72,90,43,65,24,18,43,30,37,22,33,79,94,68,39,113,94,75,86,77,14,48,26,21,34,89,71,5,36,42,41,47,81,39,28,23,23,61,6,20,26,19,89,50,29,24,105,57,51,23,48,28,60,37,18,21,70,40,18,21,30,56,25,46,25,70,87,21,34,15,20,101,31,145,32,49,59,18,10,56,73,14,29,42,44,20,69,52,32,8,84,24,33,34,29,40,57,38,84,53,19,43,33,29,28,17,63,40,66,80,33,118,31,47,31,12,25,46,43,44,61,27,64,41,31,54,48,14,10,67,102,29,69,28,31,22,26,5,5,50,47,21,35,39,13,54,52,43,3,46,83,30,100,48,13,140,39,71,20,20,96,18,48,37,19,54,117,135,37,31,48,44,41,23,48,48,47,61,5,37,32,31,32,4,28,43,21,73,8,30,54,40,32,46,47,20,10,18,17,23,58,112,52,52,70,9,69,21,45,60,28,42,20,108,72,42,21,40,31,39,74,35,19,10,21,70,28,20,73,39,27,62,23,55,15,27,33,63,17,25,25,27,41,30,13,57,26,76,88,13,43,24,23,36,19,65,26,27,54,41,45,67,125,37,61,37,15,39,21,70,49,96,127,18,47,106,31,85,29,33,58,11,10,79,28,35,47,16,48,37,67,15,42,18,24,82,40,52,13,46,35,26,42,31,30,21,40,68,17,49,19,23,39,49,38,6,76,74,9,72,24,63,62,6,26,61,31,23,55,16,37,11,93,106,52,21,78,40,81,36,37,22,27,14,16,86,56,38,117,167,95,41,2,42,40,7,37,54,22,21,19,81,38,33,71,31,11,45,66,54,95,34,32,43,33,7,50,26,54,40,75,48,65,32,30,59,22,54,74,21,12,88,36,48,45,52,13,63,34,54,25,40,7,52,12,22,72,60,56,57,14,13,89,42,51,8,30,19,14,54,74,84,37,18,54,72,43,31,46,41,62,57,90,21,9,20,38,75,30,19,41,60,27,10,33,7,21,34,7,32,15,78,61,41,66,44,38,37,14,81,29,23,72,80,124,60,34,70,81,51,21,76,45,54,69,61,46,31,33,67,14,37,15,23,2,35,58,30,41,27,115,75,59,61,17,10,78,73,14,61,19,34,13,31,25,81,41,28,19,51,24,13,22,94,16,95,29,39,50,60,33,9,32,36,80,29,78,26,44,18,33,15,23,66,83,33,11,40,79,13,25,104,29,45,83,19,54,56,26,28,104,41,41,49,28,72,12,62,48,70,40,28,26,22,44,6,48,26,19,29,74,33,32,83,44,7,28,18,70,45,104,64,16,39,91,51,40,20,28,16,146,41,117,51,77,78,15,54,22,59,18,17,54,41,16,51,32,30,24,31,35,65,80,30,55,51,11,50,78,79,38,55,22,18,10,80,58,45,16,36,30,46,38,34,38,77,61,66,12,46,22,57,70,20,33,37,3,26,3,90,17,23,51,65,10,21,51,37,49,30,59,18,47,21,69,19,77,28,62,41,61,78,78,39,20,73,20,74,5,4,67,7,17,32,48,75,15,23,59,84,35,55,89,18,3,137,47,33,26,30,31,9,25,47,23,69,24,29,12,83,57,71,36,67,13,105,17,36,59,30,48,36,50,67,26,8,38,97,60,46,13,73,43,123,9,39,34,91,63,97,38,43,23,60,25,52,33,33,54,32,26,104,12,23,28,47,29,108,27,107,20,23,31,26,52,1,39,13,14,49,17,29,41,77,33,44,12,35,65,42,60,90,18,17,27,58,33,16,59,8,40,31,93,41,48,94,27,39,35,19,19,40,32,83,69,34,18,81,26,43,22,40,103,30,59,56,51,51,26,28,12,56,5,24,18,77,15,42,105,38,13,32,65,86,47,31,24,20,60,45,47,58,40,18,23,12,23,27,21,70,43,57,24,51,53,65,72,53,53,27,39,55,7,16,43,25,12,53,41,42,54,30,21,28,16,48,45,28,25,37,18,52,45,28,47,26,42,33,15,60,64,35,70,34,65,26,39,70,22,32,43,51,44,49,23,31,40,76,44,24,55,92,19,43,2,49,32,17,49,18,25,43,38,3,65,43,31,50,20,19,178,31,58,25,13,23,34,22,22,65,16,74,51,48,5,41,89,64,14,55,56,36,102,73,18,42,4,26,13,2,50,28,55,28,72,59,82,28,28,30,22,16,29,36,111,28,44,30,42,25,7,70,54,67,31,30,50,50,23,7,61,37,38,20,33,23,50,17,58,38,33,32,33,42,22,41,46,51,28,13,79,76,11,27,13,66,50,22,72,93,59,95,5,26,30,23,20,70,61,91,18,69,39,65,56,56,26,47,46,54,18,19,15,65,64,57,28,58,33,37,76,41,39,48,23,134,22,56,9,10,30,66,19,72,28,55,24,46,77,12,65,20,43,44,78,21,61,63,28,5,46,53,67,86,11,12,51,41,64,8,44,26,60,73,31,47,33,51,39,12,52,33,37,62,9,23,26,32,58,45,77,26,50,12,39,31,62,29,23,34,22,50,18,33,39,12,14,88,87,39,48,33,11,8,25,100,104,30,58,73,27,56,17,32,74,10,37,58,80,38,103,31,41,12,51,51,78,17,33,16,69,32,20,45,43,50,29,19,38,96,35,13,43,16,54,14,13,12,13,81,91,57,26,19,33,40,24,9,37,39,28,7,46,69,27,75,11,21,33,41,80,40,44,14,16,38,42,32,53,32,64,15,48,36,86,32,33,44,48,40,26,14,18,58,11,68,61,43,45,94,15,131,30,65,39,32,52,43,28,46,43,26,8,18,20,33,37,30,18,33,42,57,25,25,83,36,29,58,36,25,14,9,38,29,84,49,28,42,80,28,44,76,16,108,82,57,106,27,11,75,14,110,106,31,108,45,52,41,58,24,49,14,24,22,16,40,42,39,34,5,40,32,66,58,34,70,35,87,29,43,95,18,77,46,36,21,23,59,40,36,131,26,22,54,86,54,93,8,36,55,62,27,14,87,53,53,147,63,13,40,24,58,5,9,75,88,37,12,33,19,55,42,24,73,31,3,2,20,63,92,12,43,41,27,35,28,21,66,87,21,65,31,24,57,43,44,66,44,34,37,38,48,32,27,60,82,23,27,54,19,16,73,14,39,49,57,57,15,17,23,47,27,19,34,50,40,55,21,48,13,77,31,36,38,82,23,45,65,42,11,82,18,35,8,17,41,30,12,42,93,26,37,66,66,59,50,28,56,31,34,6,51,31,91,40,88,10,19,30,28,36,48,39,45,52,19,16,36,19,70,12,60,60,9,80,72,27,20,18,27,101,23,11,117,7,110,10,42,61,25,56,53,47,19,43,62,61,22,54,21,48,9,24,41,85,71,57,43,34,37,9,63,13,52,27,42,20,54,29,114,9,80,24,22,86,23,9,55,23,38,64,24,24,7,89,43,50,20,48,48,44,23,38,67,25,54,68,28,93,51,41,35,62,49,63,16,37,20,14,21,43,21,63,33,21,40,33,27,49,31,11,33,52,9,19,90,35,24,33,54,55,40,14,24,26,38,62,31,45,23,33,93,24,33,33,19,40,38,26,100,61,10,45,72,15,71,71,98,31,16,40,20,38,91,9,87,37,34,75,53,66,30,59,14,50,12,42,78,22,22,60,129,43,51,78,38,32,33,6,11,21,42,88,12,53,39,25,17,25,27,27,59,92,23,39,55,30,6,8,51,64,18,95,36,53,12,38,12,12,32,30,65,57,18,26,29,30,17,26,29,24,32,41,45,31,34,71,54,56,33,27,25,41,17,31,10,37,38,8,48,37,82,26,24,93,38,21,44,35,69,27,52,52,72,59,15,16,57,41,20,83,87,45,45,104,100,63,116,43,33,24,66,12,43,32,37,58,113,35,43,16,65,36,79,21,21,46,78,26,16,45,42,43,52,25,105,13,35,43,26,102,17,29,33,41,24,11,25,9,37,64,83,15,75,67,43,44,51,26,30,8,67,46,17,69,30,77,44,50,72,17,122,12,80,60,54,65,42,78,33,48,48,10,55,32,2,33,20,25,14,76,10,75,81,37,29,20,15,5,55,58,11,11,36,14,29,16,35,40,62,39,24,20,33,43,63,23,99,10,29,52,8,40,95,23,63,37,59,44,26,10,61,64,10,44,79,28,52,78,45,72,32,17,44,52,5,64,41,78,40,60,21,79,20,36,68,37,32,29,23,15,22,67,94,15,87,55,16,66,35,147,53,25,5,15,44,21,66,39,66,98,16,57,45,30,31,18,90,49,63,35,35,37,32,68,37,42,9,36,10,31,18,59,72,19,30,68,8,7,20,18,41,55,21,112,135,40,18,59,48,22,56,47,18,65,62,19,7,38,26,28,50,37,39,21,9,9,24,17,24,14,13,8,33,39,38,47,80,158,29,9,4,28,57,71,32,2,49,12,5,72,25,22,43,26,48,19,32,47,34,97,39,44,62,62,20,23,8,25,69,104,14,43,72,56,64,84,123,40,117,18,49,20,8,61,27,75,14,35,52,85,78,45,35,15,39,42,29,11,65,49,30,9,44,79,81,74,71,19,13,14,31,19,58,44,57,13,16,54,29,24,46,118,30,14,12,37,25,46,64,13,66,68,42,31,105,36,44,52,41,16,16,44,32,73,32,49,35,170,51,53,14,28,10,53,81,16,89,53,19,26,37,33,58,90,7,13,52,14,12,27,17,18,18,65,20,34,20,9,14,16,27,65,20,82,41,14,39,30,60,75,64,33,51,13,37,36,53,49,20,58,43,57,20,40,21,14,55,7,37,5,48,41,74,37,38,21,48,52,105,25,44,9,20,17,31,90,22,40,26,53,21,11,31,17,15,32,35,46,16,14,19,24,27,40,11,39,14,33,29,24,102,26,32,30,56,24,67,35,13,68,32,17,52,17,85,37,37,48,41,43,39,35,92,68,13,27,11,66,61,39,15,18,82,51,34,21,45,13,60,38,29,12,18,39,14,15,39,21,39,37,18,21,51,14,50,14,19,43,40,71,13,80,16,34,61,38,43,45,16,27,27,21,7,6,46,32,93,9,23,23,40,53,17,29,28,20,15,33,10,50,61,11,74,11,27,74,37,20,14,37,32,81,44,22,18,81,14,24,9,50,33,79,107,82,70,81,21,15,17,42,8,109,41,149,58,18,40,27,59,46,32,65,26,51,60,43,26,7,24,80,117,30,32,38,35,15,26,67,70,59,106,20,57,20,35,28,28,25,49,4,16,42,46,4,62,27,37,177,65,76,15,37,50,27,34,54,79,122,42,27,22,30,27,83,9,42,42,46,17,90,20,61,28,24,35,95,14,14,20,70,73,16,66,27,33,64,59,9,64,41,12,43,59,54,37,56,36,23,30,116,39,36,35,79,50,30,78,6,48,64,26,18,65,54,38,24,34,80,21,58,20,75,33,86,78,6,24,47,21,14,48,48,37,27,14,48,46,37,110,22,12,21,26,16,58,12,12,40,47,53,31,4,7,3,63,29,36,56,26,42,40,34,93,69,11,47,155,66,14,25,3,53,26,54,23,17,44,26,61,52,48,31,43,61,98,13,13,49,11,33,68,46,92,11,40,21,12,10,66,13,29,28,42,9,47,12,135,21,12,49,31,82,21,20,35,69,66,139,47,25,63,91,50,56,26,47,26,54,80,54,62,53,23,25,13,23,29,61,15,66,28,28,6,15,9,21,38,57,36,33,38,38,41,25,37,83,61,61,14,85,13,93,34,6,36,2,98,53,52,14,53,15,53,7,13,43,44,41,16,34,92,60,68,32,37,16,12,20,37,133,141,28,30,35,51,56,31,39,28,27,10,8,49,16,20,40,42,16,66,107,24,77,32,38,14,13,40,29,35,37,52,15,49,75,34,83,63,41,29,39,49,68,62,92,39,17,8,63,48,24,59,9,37,33,91,54,44,40,29,18,19,41,42,29,65,50,25,55,45,41,14,49,38,73,23,17,62,13,91,52,21,22,19,44,40,44,17,34,32,39,32,16,26,21,61,52,81,35,64,26,9,28,62,54,73,29,52,31,10,34,40,134,72,34,57,12,29,57,20,70,40,15,64,24,39,31,30,9,9,60,30,15,4,30,31,27,30,94,64,33,61,57,59,42,16,30,20,9,21,40,15,13,35,51,53,43,35,24,53,12,72,14,43,61,60,34,32,27,57,72,54,28,3,40,51,38,12,36,22,56,80,11,33,38,111,23,26,110,22,46,35,45,26,17,42,22,28,46,18,49,77,34,26,20,10,40,61,63,26,42,30,21,52,19,34,14,21,51,61,79,34,9,48,78,32,27,51,29,27,42,33,16,11,71,39,37,43,76,25,54,13,89,19,23,34,44,72,21,35,24,48,28,13,29,23,62,57,32,36,29,21,33,62,21,51,47,85,66,17,28,134,10,62,51,39,60,66,106,37,64,9,22,19,43,41,55,38,18,66,39,46,61,100,22,70,97,45,52,39,32,85,59,69,43,35,80,20,16,44,71,139,9,59,4,27,71,13,26,45,23,91,52,28,37,32,59,38,6,19,16,33,19,10,44,18,37,28,58,32,33,17,13,27,8,18,27,31,29,49,49,121,69,50,61,31,44,52,85,38,94,14,43,44,37,29,21,38,14,44,78,8,44,100,63,19,8,24,85,15,8,47,34,24,36,39,31,36,54,28,37,29,30,18,18,84,7,69,67,20,29,26,18,139,11,13,13,12,12,23,54,70,22,16,11,40,18,37,16,42,35,48,19,66,41,28,81,21,26,63,14,14,129,128,55,15,10,5,44,14,17,28,90,54,46,26,36,59,20,51,46,25,47,31,4,13,24,81,17,20,30,50,72,38,26,11,53,111,20,15,40,44,9,43,57,35,22,17,50,22,21,56,78,14,15,45,72,26,43,60,52,15,35,40,54,66,28,32,50,16,36,19,86,27,17,86,50,16,24,16,52,20,52,54,35,14,12,24,29,139,51,26,19,31,35,11,30,8,84,7,85,41,31,90,54,18,102,31,26,82,14,52,97,63,78,20,22,66,41,107,66,42,28,13,62,32,38,25,68,17,86,92,27,18,24,33,23,15,42,77,47,18,29,84,39,43,67,29,56,54,20,19,33,34,27,52,94,23,24,15,27,24,16,40,62,8,2,8,61,53,22,73,9,35,8,5,30,21,58,36,32,5,49,24,49,44,50,8,43,14,20,19,39,97,68,27,26,28,48,37,72,35,34,17,31,48,85,42,22,82,64,25,24,25,43,27,52,11,29,67,53,16,34,32,30,44,20,56,32,38,30,22,91,43,48,5,34,58,56,102,21,66,11,32,62,23,8,63,59,15,11,17,40,22,18,70,53,26,51,9,63,43,23,35,21,7,42,54,22,30,36,50,85,33,22,14,145,45,53,46,25,38,65,73,15,30,27,42,28,34,31,47,100,13,24,28,59,26,106,22,19,52,19,81,53,80,15,21,72,32,34,27,25,18,28,77,64,44,30,95,33,44,40,61,22,61,61,29,67,48,52,37,17,29,30,69,107,78,59,30,110,40,96,31,11,40,42,16,57,43,46,35,27,71,45,33,85,40,15,28,28,104,44,34,37,28,26,20,32,46,22,65,31,37,53,47,16,23,10,12,57,54,35,7,72,35,21,26,102,79,27,30,117,88,24,25,49,69,41,37,45,29,50,17,70,9,85,37,53,131,102,22,54,15,67,42,13,64,76,24,5,26,20,37,59,30,63,92,39,60,69,50,38,84,13,48,38,33,55,18,20,70,69,61,14,26,74,75,9,17,20,27,20,103,16,67,48,44,25,40,14,26,68,21,30,48,44,58,21,56,115,68,25,44,91,38,46,73,48,25,31,21,103,34,20,46,27,71,62,6,75,42,12,62,17,83,45,86,29,13,7,21,16,24,5,35,2,22,68,47,34,139,9,56,13,17,37,37,36,73,30,27,14,30,37,22,11,128,24,55,31,26,21,16,43,27,51,93,77,20,55,38,37,16,2,29,60,24,26,34,21,50,24,97,20,15,17,32,30,14,27,16,8,59,72,24,34,32,32,85,24,58,27,82,12,94,16,58,43,43,24,95,25,49,121,33,15,19,50,12,30,32,8,21,24,35,77,70,98,100,48,35,17,2,15,65,29,19,4,50,17,19,56,73,22,62,20,6,10,34,27,24,70,17,18,22,42,57,45,29,58,27,76,30,34,32,14,48,66,27,9,38,130,55,46,33,45,27,23,87,36,46,29,72,56,6,12,97,10,32,22,61,69,28,46,63,42,60,15,22,74,10,40,74,61,90,72,67,11,35,72,33,69,36,21,50,48,7,24,24,11,56,151,29,43,71,28,35,36,31,14,30,44,74,21,134,10,8,77,47,31,48,102,26,51,60,70,31,19,13,24,45,34,54,29,70,23,15,58,38,22,56,37,12,35,43,36,64,52,15,52,66,27,77,78,76,61,15,44,19,35,39,39,45,56,20,30,29,34,143,49,30,26,16,14,59,18,13,33,34,45,33,34,19,41,42,39,38,51,44,38,88,70,44,28,15,22,23,6,38,4,52,66,27,72,46,14,54,70,28,17,101,21,70,12,23,23,48,39,75,102,27,10,30,21,58,81,16,28,59,33,52,54,16,44,58,68,5,23,46,19,25,27,29,24,62,37,36,31,29,59,51,52,44,8,34,13,49,24,41,45,11,54,31,44,47,21,45,28,44,36,42,39,60,34,38,48,32,27,36,28,14,15,62,53,37,7,19,30,18,42,72,29,55,28,20,23,44,37,40,97,64,93,31,29,34,36,49,107,13,17,50,62,17,31,67,9,17,51,41,33,40,28,38,31,57,49,25,20,33,54,41,17,53,48,24,40,54,36,8,59,51,21,41,100,17,25,41,8,59,74,11,59,50,14,33,13,54,32,52,29,17,9,43,47,8,17,30,66,62,10,26,57,37,25,28,61,41,31,112,49,50,78,83,62,72,23,29,57,65,59,38,82,36,22,151,26,54,7,17,41,64,69,21,84,31,108,47,16,39,9,16,18,27,69,28,31,45,41,29,27,62,60,24,47,55,73,32,21,61,58,10,47,118,50,29,67,78,19,20,33,61,20,60,49,23,43,54,21,21,52,42,41,34,44,54,29,8,20,47,56,40,75,60,13,28,12,25,34,28,24,35,24,72,68,65,47,21,52,44,32,23,25,101,48,25,37,31,26,20,59,26,18,62,16,42,25,30,62,33,22,4,38,47,33,27,26,60,52,96,16,54,25,22,76,34,24,58,56,37,101,138,16,71,18,40,53,47,34,83,17,28,46,25,20,53,102,29,33,57,79,111,36,96,9,16,71,10,63,44,43,30,28,39,16,84,62,32,42,53,26,76,37,29,105,33,46,36,12,31,27,40,11,19,13,79,28,29,41,24,20,29,20,49,18,24,59,53,13,48,18,31,26,21,56,24,86,7,27,16,13,51,25,12,19,11,70,44,61,43,63,104,36,42,71,14,33,56,28,34,35,14,31,22,27,61,29,84,33,40,63,60,71,28,54,16,52,30,36,43,127,17,65,20,66,76,39,92,32,11,13,72,25,24,53,28,8,25,41,31,30,47,22,41,52,41,24,20,38,59,75,134,40,31,20,10,18,49,28,27,52,19,41,12,38,79,37,29,20,24,45,40,85,27,24,46,43,15,7,127,41,63,55,22,92,15,30,45,121,69,26,55,65,30,47,60,35,33,68,22,32,52,91,40,51,33,21,37,91,51,53,31,50,7,85,121,11,38,41,40,34,45,22,71,57,69,57,24,7,80,35,45,50,28,4,11,55,11,55,62,41,59,38,42,25,42,43,58,27,46,88,80,24,60,56,86,80,107,46,8,82,16,33,83,55,27,68,57,75,25,49,63,95,31,71,107,40,17,32,27,64,26,57,40,56,16,25,57,12,52,37,16,38,108,40,4,30,24,21,17,67,57,89,31,22,42,81,28,32,53,87,50,97,18,15,24,32,19,28,11,52,95,102,55,113,57,30,61,5,22,4,26,53,3,58,17,47,112,43,30,49,40,37,52,34,42,76,61,57,67,43,52,45,49,108,29,23,80,45,17,29,40,44,49,134,114,28,18,20,25,10,28,36,107,94,64,93,87,26,37,32,17,125,29,38,109,36,58,12,38,74,55,16,155,37,17,35,33,66,38,39,63,52,19,111,46,18,23,70,47,8,53,7,68,34,80,62,46,23,10,17,4,11,78,106,38,70,44,46,46,77,17,57,48,82,4,9,62,137,57,45,53,80,37,36,45,40,19,30,67,13,32,56,42,23,97,5,18,17,55,53,54,10,22,29,13,36,65,44,170,117,33,29,34,36,111,20,100,82,42,28,34,38,68,74,29,53,42,27,32,61,18,39,40,33,66,11,27,31,69,46,38,59,53,40,26,4,29,44,17,48,55,30,27,33,42,78,35,32,91,71,66,18,38,8,20,27,21,21,54,71,87,65,8,40,46,59,45,75,22,32,28,27,84,146,86,46,32,23,91,77,23,51,29,43,21,22,48,68,62,50,34,23,13,46,25,82,68,31,50,98,32,35,37,30,15,53,23,25,59,19,95,14]}</script>
+<script>
+(() => {
+const D = JSON.parse(document.getElementById('pop').textContent);
+const POP = D.cookies, MU = D.mu, SIG = D.sigma, NPOP = POP.length;
+const NS = [25, 100, 400, 1000], AS = [0.01, 0.05, 0.10];
+const ALTS = [['less', 'μ < μ₀'], ['two', 'μ ≠ μ₀'], ['greater', 'μ > μ₀']];
+const INK = '#1E1A16', MUTED = '#6B635A', REJ = '#C0392B', KEEP = '#2F7D4F', PV = '#2F5DA8', RED = '#C8102E', TRUTH = '#B7791F';
+const SIM_R = 200;
+const st = { mu0: 40, n: 100, a: 0.05, alt: 'two', seed: 18, god: true, smug: false };
+const $ = id => document.getElementById(id);
+const fx = (v, d = 2) => Number(v).toFixed(d);
+const fp = p => p < 0.0001 ? '< 0.0001' : p.toFixed(4);
+const phi = x => Math.exp(-x * x / 2) / Math.sqrt(2 * Math.PI);
+function pnorm(x) { const a = Math.abs(x); let c;
+  if (a > 37) c = 0; else { const e = Math.exp(-a * a / 2);
+    if (a < 7.07106781186547) {
+      let b = 3.52624965998911e-2 * a + 0.700383064443688; b = b * a + 6.37396220353165; b = b * a + 33.912866078383;
+      b = b * a + 112.079291497871; b = b * a + 221.213596169931; b = b * a + 220.206867912376; c = e * b;
+      b = 8.83883476483184e-2 * a + 1.75566716318264; b = b * a + 16.064177579207; b = b * a + 86.7807322029461;
+      b = b * a + 296.564248779674; b = b * a + 637.333633378831; b = b * a + 793.826512519948; b = b * a + 440.413735824752; c /= b;
+    } else { let b = a + .65; b = a + 4 / b; b = a + 3 / b; b = a + 2 / b; b = a + 1 / b; c = e / b / 2.506628274631; } }
+  return x > 0 ? 1 - c : c; }
+function qnorm(p) {
+  const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239],
+        b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572],
+        c = [-7.784894002430293e-3, -0.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783],
+        d = [7.784695709041462e-3, 0.3224671290700398, 2.445134137142996, 3.754408661907416];
+  let q, r, x;
+  if (p < .02425) { q = Math.sqrt(-2 * Math.log(p)); x = (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  else if (p <= 1 - .02425) { q = p - .5; r = q * q; x = (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1); }
+  else { q = Math.sqrt(-2 * Math.log(1 - p)); x = -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1); }
+  const e = pnorm(x) - p; return x - e / phi(x) / (1 + x * e / (2 * phi(x)));
+}
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const IDX = new Int32Array(NPOP).map((_, i) => i);
+const SMUG = POP.indexOf(Math.max(...POP)), SMUGV = POP[SMUG];
+function draw(seed, n, force) {        // n students without replacement; force = put the smuggler in
+  const rnd = mulberry32(seed * 7919 + n), idx = IDX, sw = [];
+  let sum = 0, sum2 = 0, has = false, last = 0;
+  for (let i = 0; i < n; i++) { const j = i + Math.floor(rnd() * (NPOP - i)); const t = idx[i]; idx[i] = idx[j]; idx[j] = t; sw.push(j);
+    const v = POP[idx[i]]; sum += v; sum2 += v * v; if (idx[i] === SMUG) has = true; last = v; }
+  if (force && !has) { sum += SMUGV - last; sum2 += SMUGV * SMUGV - last * last; }
+  for (let i = n - 1; i >= 0; i--) { const j = sw[i], t = idx[i]; idx[i] = idx[j]; idx[j] = t; }
+  const m = sum / n, s = Math.sqrt((sum2 - n * m * m) / (n - 1));
+  return { m, s, has: has || !!force };
+}
+/* the test, for any claim */
+function crit(a, alt) { return alt === 'two' ? qnorm(1 - a / 2) : qnorm(1 - a); }
+function test(m, s, n, mu0, a, alt) {
+  const se = s / Math.sqrt(n), z = (m - mu0) / se, zc = crit(a, alt);
+  const p = alt === 'two' ? 2 * (1 - pnorm(Math.abs(z))) : alt === 'greater' ? 1 - pnorm(z) : pnorm(z);
+  let lo = -Infinity, hi = Infinity;
+  if (alt === 'two') { lo = m - zc * se; hi = m + zc * se; } else if (alt === 'greater') lo = m - zc * se; else hi = m + zc * se;
+  return { se, z, zc, p, rej: p <= a, lo, hi, rejCrit: alt === 'two' ? Math.abs(z) >= zc : alt === 'greater' ? z >= zc : z <= -zc, rejCI: mu0 < lo || mu0 > hi };
+}
+const h0True = () => Math.abs(st.mu0 - MU) < 0.01;
+const sym = { two: '≠', greater: '>', less: '<' };
+const haWord = { two: 'a different number of cookies than', greater: 'more cookies than', less: 'fewer cookies than' };
+
+/* controls */
+function seg(id, items, label, cur, on) {
+  const el = $(id); el.innerHTML = '';
+  items.forEach(v => { const b = document.createElement('button'); b.type = 'button'; b.dataset.v = v; b.innerHTML = label(v);
+    b.onclick = () => { on(v); paint(); render(); }; el.appendChild(b); });
+  const paint = () => el.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(cur()))));
+  paint(); return paint;
+}
+const pN = seg('nSeg', NS, v => v.toLocaleString(), () => st.n, v => st.n = v);
+const pA = seg('aSeg', AS, v => String(v).replace(/^0/, ''), () => st.a, v => st.a = v);
+const pAlt = seg('altSeg', ALTS.map(x => x[0]), v => ALTS.find(x => x[0] === v)[1], () => st.alt, v => st.alt = v);
+function setMu0(v) { st.mu0 = Math.abs(v - MU) < 0.3 ? MU : v; $('mu0').value = v; render(); }
+$('mu0').oninput = () => setMu0(+$('mu0').value);
+$('newSample').onclick = () => { st.seed = 1 + Math.floor(Math.random() * 99999); render(); };
+$('smugBtn').onclick = () => { st.smug = !st.smug; render(); };
+$('smugDemo').onclick = () => {
+  st.n = 25; st.a = 0.05; st.alt = 'two'; st.smug = true; pN(); pA(); pAlt();
+  for (let sd = 1; sd < 5000; sd++) { const w = draw(sd, 25, false), x = draw(sd, 25, true);
+    if (!w.has && test(w.m, w.s, 25, 65, .05, 'two').rej && !test(x.m, x.s, 25, 65, .05, 'two').rej && w.m < 46) { st.seed = sd; break; } }
+  setMu0(65);
+};
+$('godToggle').onchange = () => { st.god = $('godToggle').checked; render(); };
+const PRESETS = [[MU, 'Honest claim (42.20)'], [40, 'Small fib: 40'], [30, 'Big fib: 30'], [50, 'Fib the other way: 50']];
+PRESETS.forEach(([v, l]) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = l; b.dataset.v = v;
+  b.onclick = () => setMu0(v); $('claimPresets').appendChild(b); });
+
+/* chart helper: normal curve in cookie units */
+function curve(svgId, o) {
+  const W = 360, L = 12, R = 348, T = 66, B = 196;
+  const sx = v => L + (v - o.lo) / (o.hi - o.lo) * (R - L), pk = phi(0) / o.se, sy = v => B - phi((v - o.c) / o.se) / o.se / pk * (B - T);
+  const path = (a, b, closed) => { a = Math.max(a, o.lo); b = Math.min(b, o.hi); if (b <= a) return '';
+    let d = closed ? `M${fx(sx(a), 1)},${B}` : ''; for (let i = 0; i <= 120; i++) { const v = a + (b - a) * i / 120; d += (closed || i ? ' L' : 'M') + fx(sx(v), 1) + ',' + fx(sy(v), 1); }
+    return d + (closed ? ` L${fx(sx(b), 1)},${B} Z` : ''); };
+  let s = '';
+  (o.areas || []).forEach(([a, b, fill, stroke]) => { const d = path(a, b, true); if (d) s += `<path d="${d}" fill="${fill}" ${stroke ? `stroke="${stroke}" stroke-width="1"` : ''}/>`; });
+  s += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${INK}" stroke-width="1.5"/>`;
+  s += `<path d="${path(o.lo, o.hi, false)}" fill="none" stroke="${INK}" stroke-width="2.2"/>`;
+  const span = o.hi - o.lo, step = [1, 2, 5, 10, 20, 50].find(t => span / t <= 7) || 100;
+  for (let t = Math.ceil(o.lo / step) * step; t <= o.hi + 1e-9; t += step)
+    s += `<line x1="${fx(sx(t), 1)}" y1="${B}" x2="${fx(sx(t), 1)}" y2="${B + 4}" stroke="${MUTED}"/><text x="${fx(sx(t), 1)}" y="${B + 16}" text-anchor="middle" font-size="11" fill="${MUTED}">${t}</text>`;
+  if (o.zAxis) { const se = o.se;
+    for (let k = -6; k <= 6; k++) { const v = o.c + k * se; if (v < o.lo || v > o.hi) continue;
+      s += `<text x="${fx(sx(v), 1)}" y="${B + 30}" text-anchor="middle" font-size="10" fill="${MUTED}">${k === 0 ? 'z=0' : k}</text>`; } }
+  s += `<text x="${L}" y="${B + 46}" font-size="10.5" fill="${MUTED}">${o.caption}</text>`;
+  const used = [];
+  (o.marks || []).forEach(m => { if (m.v < o.lo || m.v > o.hi) return; const X = sx(m.v);
+    let y = 14;
+    if (m.lab) { while (used.some(u => Math.abs(u.y - y) < 12 && Math.abs(u.x - X) < 78)) y += 13; used.push({ x: X, y }); }
+    s += `<line x1="${fx(X, 1)}" y1="${m.lab ? y + 3 : T}" x2="${fx(X, 1)}" y2="${B}" stroke="${m.col}" stroke-width="${m.w || 2.5}" ${m.dash ? `stroke-dasharray="${m.dash}"` : ''}/>`;
+    if (m.lab) { const right = X < 180;
+      s += `<text x="${fx(X + (right ? 4 : -4), 1)}" y="${y}" text-anchor="${right ? 'start' : 'end'}" font-size="11.5" font-weight="800" fill="${m.col}">${m.lab}</text>`; } });
+  $(svgId).innerHTML = s;
+}
+
+/* simulation cache */
+const simCache = {};
+function sims(n) { if (!simCache[n]) simCache[n] = Array.from({ length: SIM_R }, (_, i) => draw(100000 + i, n)); return simCache[n]; }
+
+function render() {
+  const { mu0, n, a, alt, god } = st, cur = draw(st.seed, n, st.smug), { m, s } = cur, T = test(m, s, n, mu0, a, alt);
+  const H0T = h0True(), mu0s = H0T ? fx(MU, 2) : (Number.isInteger(mu0) ? String(mu0) : fx(mu0, 1));
+  $('mu0v').textContent = mu0s;
+  document.querySelectorAll('.godOnly').forEach(e => e.style.display = god ? '' : 'none');
+  $('godLegendTxt').style.display = god ? '' : 'none';
+  $('godCard').classList.toggle('off', !god);
+  /* step 1 */
+  $('hypBox').innerHTML = `H₀: μ = ${mu0s}<br>Hₐ: μ ${sym[alt]} ${mu0s}`;
+  $('muTrue').textContent = fx(MU, 2); $('sigTrue').textContent = fx(SIG, 2);
+  $('godClaim').innerHTML = H0T ? `So right now Crumble is <span class="tag keep">HONEST</span>: H₀ really holds. A guilty verdict would convict an honest man (Type I error).`
+    : `So right now Crumble is <span class="tag rej">LYING</span>: his claim of ${mu0s} is off by ${fx(Math.abs(MU - mu0), 2)}. Guilty would be the right verdict; not guilty would let a liar walk (Type II error).`;
+  /* step 2 */
+  $('nTxt').textContent = n.toLocaleString(); $('seedLab').innerHTML = `interview #${st.seed}${st.smug ? ' <b style="color:#C0392B">+ smuggler</b>' : ''}`;
+  $('sX').textContent = fx(m); $('sS').textContent = fx(s); $('sSE').textContent = fx(T.se); $('sGap').textContent = (m - mu0 >= 0 ? '+' : '') + fx(m - mu0);
+  $('sZ').textContent = fx(T.z); $('sP').textContent = fp(T.p);
+  $('zWords').innerHTML = `Our group’s average is <b>${fx(Math.abs(T.z))} standard errors</b> ${m >= mu0 ? 'above' : 'below'} his claim. If he were honest, luck would produce a gap this big ${alt === 'two' ? '(in either direction)' : ''} <b>${fx(T.p * 100, T.p < .001 ? 3 : 1)}%</b> of the time. Our bar for “guilty” is α = ${a}.`;
+  const pill = $('pill'); pill.innerHTML = T.rej ? 'Reject H₀<small>court: guilty</small>' : 'Fail to reject H₀<small>court: not guilty</small>'; pill.className = 'pill ' + (T.rej ? 'rej' : 'keep');
+  $('checks').innerHTML = [
+    [true, `<b>Random:</b> students drawn at random from all 10,000.`],
+    [n <= NPOP * 0.1, `<b>Independent:</b> n = ${n.toLocaleString()} is ${n <= NPOP * .1 ? '≤' : '>'} 10% of 10,000.`],
+    ...(cur.has ? [[false, `<b>Outlier:</b> the 300-cookie smuggler is in this sample. One value is dragging x̄ up and inflating s. Plot your data before you test!`]] : []),
+    [n > 30, n > 30 ? `<b>Sample size:</b> n = ${n} > 30, so the CLT lets us use the Normal curve even though cookie counts are skewed.` : `<b>Sample size:</b> n = ${n} is under 30 and cookie counts are skewed, so the Normal curve (and the p-value) is shaky here. Use with caution.`]
+  ].map(([ok, t]) => `<li><span class="mk ${ok ? 'ok' : 'warn'}">${ok ? '✓' : '!'}</span><span>${t}</span></li>`).join('');
+  drawPQ(m, s, n, mu0, a, alt, T, god, mu0s);
+  /* step 3 */
+  const cs = [mu0, m].concat(god ? [MU] : []);
+  const lo = Math.min(...cs) - 3.6 * T.se, hi = Math.max(...cs) + 3.6 * T.se;
+  const godMark = god ? [{ v: MU, col: TRUTH, dash: '2 3', w: 2, lab: 'true μ', ly: 26 }] : [];
+  const mirror = 2 * mu0 - m, far = Math.abs(m - mu0);
+  const pvAreas = alt === 'two' ? [[-1e9, mu0 - far, 'rgba(47,95,168,.33)'], [mu0 + far, 1e9, 'rgba(47,95,168,.33)']] : alt === 'greater' ? [[m, 1e9, 'rgba(47,95,168,.33)']] : [[-1e9, m, 'rgba(47,95,168,.33)']];
+  curve('c1', { c: mu0, se: T.se, lo, hi, zAxis: true, caption: `if H₀ is true: x̄ ~ N(${mu0s}, SE ${fx(T.se)})`, areas: pvAreas,
+    marks: [{ v: mu0, col: RED, lab: 'μ₀', w: 2 }, ...godMark, { v: m, col: INK, lab: 'x̄', ly: 40 }].concat(alt === 'two' ? [{ v: mirror, col: PV, dash: '3 3', w: 1.5 }] : []) });
+  const cut = alt === 'two' ? [mu0 - T.zc * T.se, mu0 + T.zc * T.se] : alt === 'greater' ? [null, mu0 + T.zc * T.se] : [mu0 - T.zc * T.se, null];
+  const rejAreas = []; if (cut[0] !== null) rejAreas.push([-1e9, cut[0], 'rgba(192,57,43,.25)', REJ]); if (cut[1] !== null) rejAreas.push([cut[1], 1e9, 'rgba(192,57,43,.25)', REJ]);
+  curve('c2', { c: mu0, se: T.se, lo, hi, zAxis: true, caption: `rejection region: beyond μ₀ ± ${fx(T.zc, 3)}·SE`, areas: rejAreas,
+    marks: [{ v: mu0, col: RED, lab: 'μ₀', w: 2 }, ...godMark, ...cut.filter(v => v !== null).map(v => ({ v, col: REJ, dash: '4 3', w: 1.5, lab: fx(v, 1), ly: 54 })), { v: m, col: INK, lab: 'x̄', ly: 40 }] });
+  curve('c3', { c: m, se: T.se, lo, hi, caption: `centered at our x̄ = ${fx(m)}, same SE ${fx(T.se)}`, areas: [[T.lo, T.hi, 'rgba(47,125,79,.22)', KEEP]],
+    marks: [{ v: m, col: INK, lab: 'x̄', w: 2, ly: 40 }, ...godMark, { v: mu0, col: RED, lab: 'μ₀ ' + (T.rejCI ? 'outside' : 'inside') }] });
+  const tail = { two: '2·P(Z ≥ |z|)', greater: 'P(Z ≥ z)', less: 'P(Z ≤ z)' }[alt];
+  $('k1').textContent = `z = (${fx(m)} − ${mu0s}) / ${fx(T.se)} = ${fx(T.z, 3)}\np-value = ${tail} = ${fp(T.p)}\ncompare with α = ${a}`;
+  $('o1').textContent = T.rej ? `${fp(T.p)} ≤ ${a} → Reject H₀` : `${fp(T.p)} > ${a} → Fail to reject H₀`;
+  const qc = { two: `qnorm(1 − ${a}/2)`, greater: `qnorm(1 − ${a})`, less: `qnorm(${a})` }[alt];
+  const reg = { two: `|z| ≥ ${fx(T.zc, 3)}`, greater: `z ≥ ${fx(T.zc, 3)}`, less: `z ≤ ${fx(-T.zc, 3)}` }[alt];
+  const regX = { two: `x̄ ≤ ${fx(cut[0])} or x̄ ≥ ${fx(cut[1])}`, greater: `x̄ ≥ ${fx(cut[1])}`, less: `x̄ ≤ ${fx(cut[0])}` }[alt];
+  $('k2').textContent = `z* = ${qc} = ${alt === 'less' ? fx(-T.zc, 3) : fx(T.zc, 3)}\nreject if ${reg}\n  i.e. ${regX}\nobserved z = ${fx(T.z, 3)}`;
+  $('o2').textContent = T.rejCrit ? `z is in the rejection region → Reject H₀` : `z is not in the rejection region → Fail to reject H₀`;
+  const lvl = Math.round((1 - a) * 100), lvl2 = Math.round((1 - 2 * a) * 100);
+  $('k3').textContent = alt === 'two' ? `${lvl}% CI = x̄ ± z*·SE\n= ${fx(m)} ± ${fx(T.zc, 3)} × ${fx(T.se)}\n= (${fx(T.lo)}, ${fx(T.hi)})\nμ₀ = ${mu0s} is ${T.rejCI ? 'outside' : 'inside'}`
+    : alt === 'greater' ? `${lvl}% lower bound = x̄ − z*·SE\n= ${fx(m)} − ${fx(T.zc, 3)} × ${fx(T.se)} = ${fx(T.lo)}\n(= lower end of a ${lvl2}% CI)\nμ₀ = ${mu0s} is ${T.rejCI ? 'below it' : 'not below it'}`
+    : `${lvl}% upper bound = x̄ + z*·SE\n= ${fx(m)} + ${fx(T.zc, 3)} × ${fx(T.se)} = ${fx(T.hi)}\n(= upper end of a ${lvl2}% CI)\nμ₀ = ${mu0s} is ${T.rejCI ? 'above it' : 'not above it'}`;
+  $('o3').textContent = T.rejCI ? 'μ₀ is not plausible → Reject H₀' : 'μ₀ is plausible → Fail to reject H₀';
+  [['m1', T.rej], ['m2', T.rejCrit], ['m3', T.rejCI]].forEach(([id, r]) => $(id).className = 'method ' + (r ? 'rej' : 'keep'));
+  $('sameGap').innerHTML = `All three methods compare the same two numbers: the gap <b>|x̄ − μ₀| = ${fx(far)}</b> and the yardstick <b>z*·SE = ${fx(T.zc, 3)} × ${fx(T.se)} = ${fx(T.zc * T.se)}</b>. ` +
+    (alt === 'two' ? (far >= T.zc * T.se ? `The gap is bigger, so μ₀ is outside the CI, x̄ is in the rejection region, and p ≤ α.` : `The gap is smaller, so μ₀ is inside the CI, x̄ misses the rejection region, and p > α.`)
+      : `For a one-sided test, only a gap in the Hₐ direction counts.`) +
+    (god ? ` <span style="color:${TRUTH};font-weight:700">Security tape: the true μ is ${fx(MU)}, so Crumble is ${H0T ? 'honest' : 'lying'} and this verdict is ${(T.rej !== H0T) ? 'correct' : (H0T ? 'a Type I error (an honest man convicted)' : 'a Type II error (a liar walks free)')}.</span>` : '');
+  drawBridge(T, a, alt);
+  drawWhy(m, s, n, mu0, a, alt, T, god, mu0s);
+  drawTwin();
+  drawRecap(m, T.se, n, mu0, mu0s, a, alt, T);
+  /* step 4 */
+  ['two', 'greater', 'less'].forEach(k => $('r-' + k).style.background = k === alt ? '#FFF1C9' : '');
+  document.querySelectorAll('.haWord').forEach(e => e.textContent = haWord[alt]);
+  $('yourConclusion').innerHTML = `<b>Today’s verdict: ${T.rej ? 'guilty' : 'not guilty'}.</b> In statistician’s wording: ` + (T.rej
+    ? `p-value = ${fp(T.p)} ≤ α = ${a}, so we reject H₀. The data give convincing evidence that the average Terp eats ${haWord[alt]} ${mu0s} cookies a semester.`
+    : `p-value = ${fp(T.p)} > α = ${a}, so we fail to reject H₀. The data do not give convincing evidence that the average Terp eats ${haWord[alt]} ${mu0s} cookies a semester.`);
+  drawSmug(n, mu0, a, alt, god, mu0s);
+  /* step 5.1 ruler */
+  drawRuler(m, s, n, a, alt, mu0, T, god);
+  /* step 5.3 sim */
+  drawSim(n, mu0, a, alt, god, H0T, mu0s);
+  document.querySelectorAll('#claimPresets button').forEach(b => b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.v - mu0) < 0.01)));
+}
+
+
+function drawBridge(T, a, alt) {
+  const W = 720, L = 20, R = 700, Tp = 34, B = 150, sgn = alt === 'less' ? -1 : 1;
+  const sx = z => L + (z + 4) / 8 * (R - L), sy = y => B - y / phi(0) * (B - Tp);
+  const area = (p, q) => { p = Math.max(p, -4); q = Math.min(q, 4); if (q <= p) return ''; let d = `M${fx(sx(p), 1)},${B}`;
+    for (let i = 0; i <= 80; i++) { const v = p + (q - p) * i / 80; d += ` L${fx(sx(v), 1)},${fx(sy(phi(v)), 1)}`; } return d + ` L${fx(sx(q), 1)},${B} Z`; };
+  const z = T.z, zc = T.zc;
+  let s = '';
+  const rejR = alt === 'two' ? [[-9, -zc], [zc, 9]] : alt === 'greater' ? [[zc, 9]] : [[-9, -zc]];
+  const pvR = alt === 'two' ? [[-9, -Math.abs(z)], [Math.abs(z), 9]] : alt === 'greater' ? [[z, 9]] : [[-9, z]];
+  rejR.forEach(([p, q]) => s += `<path d="${area(p, q)}" fill="rgba(192,57,43,.18)" stroke="${REJ}" stroke-width="2"/>`);
+  pvR.forEach(([p, q]) => s += `<path d="${area(p, q)}" fill="rgba(47,95,168,.45)"/>`);
+  let cv = ''; for (let i = 0; i <= 200; i++) { const v = -4 + 8 * i / 200; cv += (i ? ' L' : 'M') + fx(sx(v), 1) + ',' + fx(sy(phi(v)), 1); }
+  s += `<path d="${cv}" fill="none" stroke="${INK}" stroke-width="2.2"/><line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${INK}" stroke-width="1.5"/>`;
+  s += `<text x="${sx(0)}" y="${sy(phi(0)) - 8}" text-anchor="middle" font-size="12" font-weight="700" fill="${MUTED}">H₀ curve in z units (0 = μ₀)</text>`;
+  /* ruler on the Ha side */
+  const y1 = 196, y2 = 236;
+  const capSide = alt === 'two' ? (z >= 0 ? -1 : 1) : -sgn, capX = capSide < 0 ? L : R, capA = capSide < 0 ? 'start' : 'end';
+  s += `<text x="${capX}" y="${y1 - 8}" text-anchor="${capA}" font-size="11.5" font-weight="800" fill="${MUTED}">POSITION z</text><text x="${capX}" y="${y2 + 22}" text-anchor="${capA}" font-size="11.5" font-weight="800" fill="${MUTED}">TAIL AREA ${alt === 'two' ? '(both tails)' : '(one tail)'}</text>`;
+  const tailA = d => alt === 'two' ? 2 * (1 - pnorm(d)) : 1 - pnorm(d);
+  const sides = alt === 'two' ? [1, -1] : [sgn];
+  sides.forEach(sd => {
+    const x0 = sx(0), x4 = sx(4 * sd);
+    s += `<line x1="${x0}" y1="${y1}" x2="${x4}" y2="${y1}" stroke="${INK}" stroke-width="1.5"/>`;
+    for (let d = 0; d <= 4.001; d += 0.5) { const X = sx(d * sd);
+      s += `<line x1="${fx(X, 1)}" y1="${y1 - 4}" x2="${fx(X, 1)}" y2="${y1 + 4}" stroke="${INK}"/>`;
+      s += `<text x="${fx(X, 1)}" y="${y1 + 17}" text-anchor="middle" font-size="11" fill="${INK}">${fx(d * sd, 1)}</text>`;
+      if (sd === sides[0]) s += `<text x="${fx(X, 1)}" y="${y2}" text-anchor="middle" font-size="10.5" fill="${MUTED}">${tailA(d) < 0.001 ? tailA(d).toExponential(0) : fx(tailA(d), 3)}</text>`; }
+  });
+  const dz = alt === 'two' ? Math.abs(z) : sgn * z, side = alt === 'two' ? (z >= 0 ? 1 : -1) : sgn;
+  const posX = d => sx(Math.max(-0.05, Math.min(4, d)) * side);
+  const mk = (d, col, top, lines, wide, bx) => { const X = posX(d);
+    return `<line x1="${fx(X, 1)}" y1="${fx(top, 1)}" x2="${fx(X, 1)}" y2="${y1 + 5}" stroke="${col}" stroke-width="3"/>` +
+      `<circle cx="${fx(X, 1)}" cy="${y1}" r="4.5" fill="${col}"/>` +
+      `<path d="M${fx(X, 1)} ${y2 + 7} L${fx(bx, 1)} ${y2 + 30}" stroke="${col}" stroke-width="1.5" fill="none"/>` +
+      `<rect x="${fx(bx - wide / 2, 1)}" y="${y2 + 30}" width="${wide}" height="40" rx="8" fill="#fff" stroke="${col}" stroke-width="2"/>` +
+      `<text x="${fx(bx, 1)}" y="${y2 + 46}" text-anchor="middle" font-size="12" font-weight="800" fill="${col}">${lines[0]}</text>` +
+      `<text x="${fx(bx, 1)}" y="${y2 + 62}" text-anchor="middle" font-size="12" font-weight="800" fill="${col}">${lines[1]}</text>`; };
+  const wC = 128, wZ = 156, minGap = (wC + wZ) / 2 + 10;
+  const clampB = (x, w) => Math.max(L + w / 2, Math.min(R - w / 2, x));
+  let bC = clampB(posX(zc), wC), bZ = clampB(posX(dz), wZ);
+  if (Math.abs(bZ - bC) < minGap) {
+    const zRight = posX(dz) > posX(zc) || (posX(dz) === posX(zc) && side > 0), mid = (bC + bZ) / 2;
+    bZ = mid + (zRight ? 1 : -1) * minGap / 2; bC = mid - (zRight ? 1 : -1) * minGap / 2;
+    const fix = (zRight ? R - (bZ + wZ / 2) : (bZ - wZ / 2) - L); if (fix < 0) { const sh = zRight ? fix : -fix; bZ += sh; bC += sh; }
+    const fix2 = (zRight ? (bC - wC / 2) - L : R - (bC + wC / 2)); if (fix2 < 0) { const sh = zRight ? -fix2 : fix2; bZ += sh; bC += sh; }
+  }
+  s += mk(zc, REJ, sy(phi(zc)) - 2, [`z* = ${fx(side * zc, 2)}`, `area α = ${a}`], wC, bC);
+  s += mk(dz, PV, sy(phi(Math.min(4, Math.max(0, dz)))) - 2, [`our z = ${fx(z, 2)}${Math.abs(z) > 4 ? ' (off chart)' : ''}`, `area p ${T.p < 0.0001 ? '< 0.0001' : '= ' + fp(T.p)}`], wZ, bZ);
+  $('cB').innerHTML = s;
+  const zAbs = alt === 'two' ? `|z| = ${fx(Math.abs(z), 3)}` : `z = ${fx(z, 3)}`, zcS = alt === 'less' ? fx(-zc, 3) : fx(zc, 3);
+  $('eqA').innerHTML = `Is the blue area smaller than the red area? <b>p ${T.p < 0.0001 ? '< 0.0001' : '= ' + fp(T.p)} ${T.p <= a ? '≤' : '>'} α = ${a}</b> → ${T.p <= a ? 'yes, reject' : 'no, fail to reject'}`;
+  $('eqB').innerHTML = `Is our z further out than z*? <b>${zAbs} ${T.rejCrit ? (alt === 'less' ? '≤' : '≥') : (alt === 'less' ? '>' : '<')} ${alt === 'two' ? 'z* = ' + zcS : 'z* = ' + zcS}</b> → ${T.rejCrit ? 'yes, reject' : 'no, fail to reject'}`;
+  $('eqTxt').innerHTML = `These are the same question. z* is <i>defined</i> as the spot whose tail area is exactly α (that’s <code>${alt === 'two' ? `qnorm(1 − ${a}/2)` : alt === 'greater' ? `qnorm(1 − ${a})` : `qnorm(${a})`}</code>), and the p-value is just our z’s tail area (<code>${alt === 'two' ? '2*(1 − pnorm(abs(z)))' : alt === 'greater' ? '1 − pnorm(z)' : 'pnorm(z)'}</code>). ` +
+    `Since the area keeps shrinking as you move out, <b>“z past z*” and “p below α” always happen together</b>. ` +
+    (T.rej ? `Here our z is past z*, so its blue area is tucked inside the red one.` : `Here our z sits inside z*, so its blue area is bigger than the red one and swallows it.`) +
+    ` The two methods only differ in what they report: the p-value tells you <i>how</i> extreme x̄ is; the critical value just says yes or no.`;
+}
+
+
+function drawSmug(n, mu0, a, alt, god, mu0s) {
+  const w = draw(st.seed, n, false), wSm = draw(st.seed, n, true);
+  const noSm = w.has ? null : w;   // the random draw may already contain him
+  const rows = [['Without the smuggler', noSm || w, noSm ? '' : ' (this draw already had him)'], ['With the smuggler', wSm, '']];
+  const Ts = rows.map(r => test(r[1].m, r[1].s, n, mu0, a, alt));
+  const pts = [mu0, MU].concat(Ts.flatMap(T => [T.lo, T.hi]).filter(Number.isFinite), rows.map(r => r[1].m));
+  let lo = Math.floor((Math.min(...pts) - 3) / 5) * 5, hi = Math.ceil((Math.max(...pts) + 3) / 5) * 5;
+  const L = 190, R = 880, sx = v => L + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * (R - L);
+  let g = '';
+  const step = (hi - lo) > 60 ? 10 : 5;
+  for (let t = lo; t <= hi; t += step) g += `<line x1="${sx(t)}" y1="30" x2="${sx(t)}" y2="168" stroke="#EFE7DA"/><text x="${sx(t)}" y="186" text-anchor="middle" font-size="12" fill="${MUTED}">${t}</text>`;
+  g += `<text x="${R}" y="204" text-anchor="end" font-size="11.5" fill="${MUTED}">cookies per semester</text>`;
+  rows.forEach((r, i) => { const T = Ts[i], y = 66 + i * 64, col = T.rej ? REJ : KEEP, lo2 = Number.isFinite(T.lo) ? T.lo : lo, hi2 = Number.isFinite(T.hi) ? T.hi : hi;
+    g += `<text x="${L - 14}" y="${y - 4}" text-anchor="end" font-size="13.5" font-weight="800" fill="${INK}">${r[0]}</text>`;
+    g += `<text x="${L - 14}" y="${y + 13}" text-anchor="end" font-size="12" fill="${MUTED}">x̄ ${fx(r[1].m, 1)} · s ${fx(r[1].s, 1)} · SE ${fx(T.se, 1)}</text>`;
+    g += `<line x1="${sx(lo2)}" y1="${y}" x2="${sx(hi2)}" y2="${y}" stroke="${col}" stroke-width="9" stroke-linecap="round" stroke-opacity=".8"/>`;
+    g += `<circle cx="${sx(r[1].m)}" cy="${y}" r="7" fill="#fff" stroke="${INK}" stroke-width="2.5"/>`;
+    g += `<text x="${(sx(lo2) + sx(hi2)) / 2}" y="${y - 12}" text-anchor="middle" font-size="12" font-weight="800" fill="${col}">${T.rej ? 'claim rejected' : 'claim survives'}</text>`; });
+  g += `<line x1="${sx(mu0)}" y1="24" x2="${sx(mu0)}" y2="168" stroke="${RED}" stroke-width="3"/><text x="${sx(mu0)}" y="18" text-anchor="middle" font-size="12.5" font-weight="800" fill="${RED}">claim μ₀ = ${mu0s}</text>`;
+  if (god) g += `<line x1="${sx(MU)}" y1="34" x2="${sx(MU)}" y2="168" stroke="${TRUTH}" stroke-width="2.5" stroke-dasharray="3 3"/><text x="${sx(MU)}" y="${Math.abs(sx(MU) - sx(mu0)) < 90 ? 178 : 18}" text-anchor="middle" font-size="12" font-weight="800" fill="${TRUTH}">true μ = ${fx(MU)}</text>`;
+  $('smugSvg').innerHTML = g;
+  const lvl = alt === 'two' ? Math.round((1 - a) * 100) + '% CI' : 'one-sided bound';
+  const ci = T => alt === 'two' ? `(${fx(T.lo, 1)}, ${fx(T.hi, 1)})` : alt === 'greater' ? `≥ ${fx(T.lo, 1)}` : `≤ ${fx(T.hi, 1)}`;
+  $('smugTab').innerHTML = `<tr><th></th><th>x̄</th><th>s</th><th>SE = s/√n</th><th>${lvl}</th><th>p-value vs μ₀ = ${mu0s}</th><th>verdict</th></tr>` +
+    rows.map((r, i) => `<tr><td><b>${r[0]}</b>${r[2] ? '<br><span class="mini">' + r[2] + '</span>' : ''}</td><td>${fx(r[1].m)}</td><td>${fx(r[1].s)}</td><td>${fx(Ts[i].se)}</td><td>${ci(Ts[i])}</td><td>${fp(Ts[i].p)}</td><td><span class="tag ${Ts[i].rej ? 'rej' : 'keep'}">${Ts[i].rej ? 'reject' : 'fail to reject'}</span></td></tr>`).join('');
+  const [A0, A1] = Ts, h0f = !h0True();
+  let txt = `One value of 300 among ${n} moves x̄ by <b>${fx(wSm.m - (noSm || w).m, 1)}</b> cookies and stretches the SE from <b>${fx(A0.se, 1)}</b> to <b>${fx(A1.se, 1)}</b>`;
+  txt += n <= 30 ? ` (n is small, so one student has a big say). ` : ` (with n = ${n} his pull is diluted). `;
+  if (A0.rej && !A1.rej && h0f) txt += `<b>The claim of ${mu0s} was rejected without him and survives with him.</b> `;
+  if (!A1.rej && h0f && god) txt += `<span style="color:${TRUTH};font-weight:700">God’s view: the claim is false (the truth is ${fx(MU)}), so “fail to reject” here is a Type II error.</span> ` +
+    (A0.rej ? `If we said “we accept that Terps eat ${mu0s} cookies,” we’d be announcing something false because of one noisy data point. ` : `Here the claim survives even without him, but his extra noise makes the interval wider still, so even more wrong claims survive. `);
+  else if (!A1.rej) txt += `The wider interval means more claims survive. `;
+  else txt += `Here the claim is still rejected: try the extreme case button, or a smaller n. `;
+  txt += `<b>Lesson:</b> “fail to reject” can just mean the evidence is too noisy to rule anything out. Plot the sample first; with skewed data and a small n, one outlier can take over x̄ and s (that’s why the rule asks for n &gt; 30).`;
+  $('smugTxt').innerHTML = txt;
+  $('smugBtn').setAttribute('aria-pressed', String(st.smug));
+  $('smugBtn').textContent = st.smug ? '✓ Smuggler is in our interview (click to remove)' : '🍪 Put the smuggler in our interview';
+}
+
+
+/* p-value explainer: a world where the claim is true */
+const h0Cache = {};
+function h0World(n) {   // z values from a population shifted so its mean equals the claim; independent of the claim itself
+  if (!h0Cache[n]) h0Cache[n] = Array.from({ length: 1000 }, (_, i) => { const d = draw(500000 + i, n, false); return (d.m - MU) / (d.s / Math.sqrt(n)); });
+  return h0Cache[n];
+}
+function drawPQ(m, s, n, mu0, a, alt, T, god, mu0s) {
+  const z = T.z, se = T.se, gap = m - mu0, dirTxt = alt === 'two' ? 'at least ' + fx(Math.abs(z)) + ' SEs away, in either direction'
+    : alt === 'greater' ? (z >= 0 ? 'at least ' + fx(z) + ' SEs above the claim' : 'at z = ' + fx(z) + ' or higher (our x̄ is below the claim, the opposite of what Hₐ predicts)')
+    : (z <= 0 ? 'at least ' + fx(-z) + ' SEs below the claim' : 'at z = ' + fx(z) + ' or lower (our x̄ is above the claim, the opposite of what Hₐ predicts)');
+  $('pq1mu').textContent = mu0s;
+  $('pq2z').textContent = `z = ${fx(z)}`;
+  $('pq2txt').innerHTML = `= gap ÷ SE = (${fx(m)} − ${mu0s}) ÷ ${fx(se)} = ${gap >= 0 ? '+' : ''}${fx(gap)} ÷ ${fx(se)}. Our x̄ is <b>${fx(Math.abs(z))} SEs ${gap >= 0 ? 'above' : 'below'}</b> the claim.`;
+  $('pq3dir').textContent = dirTxt;
+  $('pq3p').textContent = `p = ${fp(T.p)}`;
+  const per100 = T.p * 100;
+  $('pq3txt').innerHTML = per100 >= 1 ? `About <b>${Math.round(per100)} out of every 100</b> such interviews would look at least this far off. ${T.p <= a ? `That’s rare (≤ α = ${a}), so luck is a poor excuse: reject the claim.` : `That’s common (more than α = ${a}), so luck explains our gap just fine: fail to reject.`}`
+    : `Fewer than <b>1 in 100</b> such interviews would look this far off (${per100 < 0.01 ? 'under 1 in 10,000' : 'about ' + fx(per100, 2) + ' in 100'}). Luck is a poor excuse: reject the claim.`;
+  $('pqShift').textContent = (mu0 - MU >= 0 ? '+' : '−') + fx(Math.abs(mu0 - MU));
+  const Z = h0World(n), ext = v => alt === 'two' ? Math.abs(v) >= Math.abs(z) : alt === 'greater' ? v >= z : v <= z;
+  const L = 20, R = 740, B = 172, Tp = 50, Z0 = -4.5, Z1 = 4.5, sx = v => L + (v - Z0) / (Z1 - Z0) * (R - L);
+  /* bins: a regular 0.2 grid, split exactly at the cutoff(s) so no bar straddles the line */
+  const cuts = (alt === 'two' ? [Math.abs(z), -Math.abs(z)] : [z]).filter(c => c > Z0 && c < Z1);
+  let edges = []; for (let e = Z0; e <= Z1 + 1e-9; e += 0.2) edges.push(+e.toFixed(4));
+  cuts.forEach(c => { edges = edges.filter(e => Math.abs(e - c) >= 0.07 || e === Z0 || e === Z1); edges.push(c); });
+  edges = [...new Set(edges)].sort((p, q) => p - q);
+  const cnt = edges.slice(1).map(() => [0, 0]); let nExt = 0;
+  Z.forEach(v => { const e = ext(v); if (e) nExt++;
+    const vc = Math.min(Z1 - 1e-9, Math.max(Z0, v)); let k = edges.findIndex((x, i) => i < edges.length - 1 && vc >= x && vc < edges[i + 1]); if (k < 0) k = cnt.length - 1;
+    cnt[k][e ? 1 : 0]++; });
+  const dens = cnt.map((c, k) => (c[0] + c[1]) / (1000 * (edges[k + 1] - edges[k])));
+  const mx = Math.max(...dens, phi(0)) * 1.04, hy = d => d / mx * (B - Tp);
+  let g = '';
+  cnt.forEach(([c0, c1], k) => { const w = edges[k + 1] - edges[k], x0 = sx(edges[k]) + 0.8, wpx = Math.max(0.5, sx(edges[k + 1]) - sx(edges[k]) - 1.6);
+    const h0 = hy(c0 / (1000 * w)), h1 = hy(c1 / (1000 * w));
+    if (c0) g += `<rect x="${fx(x0, 1)}" y="${fx(B - h0, 1)}" width="${fx(wpx, 1)}" height="${fx(h0, 1)}" fill="#D9D3C7"/>`;
+    if (c1) g += `<rect x="${fx(x0, 1)}" y="${fx(B - h0 - h1, 1)}" width="${fx(wpx, 1)}" height="${fx(h1, 1)}" fill="${PV}"/>`; });
+  let cv = ''; for (let i = 0; i <= 160; i++) { const v = Z0 + (Z1 - Z0) * i / 160; cv += (i ? ' L' : 'M') + fx(sx(v), 1) + ',' + fx(B - hy(phi(v)), 1); }
+  g += `<path d="${cv}" fill="none" stroke="${INK}" stroke-width="1.8" stroke-dasharray="5 4"/>`;
+  g += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${INK}" stroke-width="1.5"/>`;
+  for (let t = -4; t <= 4; t++) g += `<line x1="${sx(t)}" y1="${B}" x2="${sx(t)}" y2="${B + 4}" stroke="${INK}"/><text x="${sx(t)}" y="${B + 17}" text-anchor="middle" font-size="12" fill="${MUTED}">${t}</text>`;
+  g += `<text x="${(L + R) / 2}" y="${B + 36}" text-anchor="middle" font-size="11.5" fill="${MUTED}">z = (each interview’s x̄ − claim) ÷ its SE</text>`;
+  /* cutoff lines + labels on two rows so they never collide */
+  const marks = [{ v: z, col: INK, w: 3, dash: '', lab: `our z = ${fx(z)}` }];
+  if (alt === 'two') marks.push({ v: -z, col: PV, w: 2, dash: '4 3', lab: `mirror = ${fx(-z)}` });
+  const used = [], placed = [];
+  marks.forEach(mk => { const off = Math.abs(mk.v) > Z1, vv = Math.max(Z0, Math.min(Z1, mk.v)), X = sx(vv), lab = mk.lab + (off ? ' (off chart)' : '');
+    const wl = lab.length * 6.6, anchorEnd = X > R - wl - 8, x1 = anchorEnd ? X - wl - 5 : X + 5, x2 = anchorEnd ? X - 5 : X + wl + 5;
+    let row = 0; while (used.some(u => (u.row === row && !(x2 < u.a - 6 || x1 > u.b + 6)))) row++;
+    used.push({ row, a: x1, b: x2 }); placed.push({ mk, X, lab, anchorEnd, row }); });
+  const lineTop = 15 + Math.max(...placed.map(q => q.row)) * 17 + 6;
+  placed.forEach(({ mk, X, lab, anchorEnd, row }) => {
+    g += `<line x1="${fx(X, 1)}" y1="${lineTop}" x2="${fx(X, 1)}" y2="${B}" stroke="${mk.col}" stroke-width="${mk.w}" ${mk.dash ? `stroke-dasharray="${mk.dash}"` : ''}/>`;
+    g += `<line x1="${fx(X, 1)}" y1="${15 + row * 17 + 4}" x2="${fx(X, 1)}" y2="${lineTop}" stroke="${mk.col}" stroke-width="1" opacity=".5"/>`;
+    g += `<text x="${fx(anchorEnd ? X - 5 : X + 5, 1)}" y="${15 + row * 17}" text-anchor="${anchorEnd ? 'end' : 'start'}" font-size="12" font-weight="800" fill="${mk.col}" stroke="#F4F7FD" stroke-width="4" stroke-linejoin="round" paint-order="stroke">${lab}</text>`; });
+  const blueTxt = alt === 'two' ? 'beyond our z or its mirror (either direction)' : alt === 'greater' ? 'our z or higher' : 'our z or lower';
+  $('pqLeg').innerHTML = `<span><i class="sw" style="background:${PV}"></i>at least as extreme as ours: ${blueTxt}</span><span><i class="sw" style="background:#D9D3C7"></i>less extreme</span><span><i class="sw" style="background:#fff;outline:1.5px dashed ${INK}"></i>Normal curve the p-value formula uses</span>`;
+  $('pqSvg').innerHTML = g;
+  $('pqSim').innerHTML = `<b>${nExt} of 1,000</b> interviews in the claim-is-true world (${fx(nExt / 10, 1)}%) landed ${dirTxt} (blue bars). The formula says <b>p = ${fp(T.p)}</b>. ` +
+    (Math.abs(nExt / 1000 - T.p) < 0.03 ? `Same answer: the p-value is just this “how often” share, read off the Normal curve instead of simulated.`
+      : `They differ a bit${n < 30 ? `: with n = ${n} and skewed cookie counts the pile isn’t quite Normal yet, so the formula’s curve is only an approximation (the CLT needs a bigger n)` : ''}. Both still answer the same “how often” question.`);
+  const H0T = h0True();
+  $('pqNot').innerHTML = [
+    `<b>Not</b> the chance the claim is true. p = ${fp(T.p)} does not mean “a ${fx(T.p * 100, 1)}% chance the average is ${mu0s}.” The p-value <i>assumes</i> the claim is true, so it can’t also measure it.` + (god ? ` <span style="color:${TRUTH};font-weight:700">(God’s view: the claim is ${H0T ? 'true' : 'false'} no matter what p says.)</span>` : ''),
+    `<b>Not</b> the chance our result is “just a fluke.” It’s about other interviews in an imagined world, not about ours.`,
+    `<b>Not</b> proof when it’s big. A large p only says luck could explain the gap; Step 5 shows false claims surviving with large p all the time.`
+  ].map(t => `<li>${t}</li>`).join('');
+}
+
+
+function drawWhy(m, s, n, mu0, a, alt, T, god, mu0s) {
+  const z = T.z, zc = T.zc, se = T.se, two = alt === 'two', H0T = h0True();
+  const oneTail = two ? T.p / 2 : T.p, pS = fp(T.p);
+  /* ---- A: why p <= alpha ---- */
+  $('whyA').innerHTML = [
+    `<b>α is the false-alarm rate you agree to in advance.</b> Before seeing data you say: “If the claim is actually true, I’m willing to wrongly reject it ${Math.round(a * 100)}% of the time.” Smaller α = fewer false alarms, but you need stronger evidence to reject.`,
+    `<b>The rule “reject when p ≤ α” delivers exactly that rate.</b> If the claim is true, p ≤ ${a} happens in about ${Math.round(a * 100)}% of interviews, because p ≤ α means “we landed in the most extreme ${Math.round(a * 100)}% of what the claim predicts.” Step 5 part 4 checks this: set the claim to the truth and about ${Math.round(a * 100)}% of the 200 interviewers still reject.`,
+    two ? `<b>α or α/2?</b> Compare <b>p with α</b>. For Hₐ: μ ≠ μ₀ both numbers already count <i>both</i> tails: α is split into α/2 per tail, and the p-value adds our tail and its mirror (p = 2 × one tail). Comparing one tail with α/2 is the same comparison, just halved on both sides.`
+        : `<b>α or α/2?</b> For a one-sided Hₐ there is no splitting: all of α sits in the one tail Hₐ points to, and p is that one tail. Compare p with α.`,
+    `<b>Is p ≤ α the error itself?</b> No. α is the error rate of the <i>rule</i> over many interviews when H₀ is true; p is about <i>our</i> interview. Rejecting with p = 0.01 doesn’t mean a 1% chance we’re wrong.`
+  ].map(t => `<li>${t}</li>`).join('');
+  $('whyAmath').innerHTML = two
+    ? `one tail: ${fx(oneTail, 4)} vs α/2 = ${fx(a / 2, 3)}<br>both tails: p = ${pS} vs α = ${a}<br>→ same verdict: <b>${T.rej ? 'reject' : 'fail to reject'}</b>`
+    : `one tail: p = ${pS} vs α = ${a} (no splitting)<br>→ <b>${T.rej ? 'reject' : 'fail to reject'}</b>`;
+  {
+    const L = 14, R = 366, Tp = 52, B = 160, sx = v => L + (v + 4) / 8 * (R - L), sy = y => B - y / phi(0) * (B - Tp);
+    const area = (p, q) => { p = Math.max(p, -4); q = Math.min(q, 4); if (q <= p) return ''; let d = `M${fx(sx(p), 1)},${B}`;
+      for (let i = 0; i <= 60; i++) { const v = p + (q - p) * i / 60; d += ` L${fx(sx(v), 1)},${fx(sy(phi(v)), 1)}`; } return d + ` L${fx(sx(q), 1)},${B} Z`; };
+    let g = '';
+    const rej = two ? [[-9, -zc], [zc, 9]] : alt === 'greater' ? [[zc, 9]] : [[-9, -zc]];
+    const pv = two ? [[-9, -Math.abs(z)], [Math.abs(z), 9]] : alt === 'greater' ? [[z, 9]] : [[-9, z]];
+    rej.forEach(([p, q]) => g += `<path d="${area(p, q)}" fill="rgba(192,57,43,.2)" stroke="${REJ}" stroke-width="2"/>`);
+    pv.forEach(([p, q]) => g += `<path d="${area(p, q)}" fill="rgba(47,95,168,.42)"/>`);
+    let cv = ''; for (let i = 0; i <= 120; i++) { const v = -4 + 8 * i / 120; cv += (i ? ' L' : 'M') + fx(sx(v), 1) + ',' + fx(sy(phi(v)), 1); }
+    g += `<path d="${cv}" fill="none" stroke="${INK}" stroke-width="2"/><line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${INK}" stroke-width="1.5"/>`;
+    for (let t = -3; t <= 3; t++) g += `<text x="${sx(t)}" y="${B + 15}" text-anchor="middle" font-size="11" fill="${MUTED}">${t}</text>`;
+    g += `<text x="${(L + R) / 2}" y="${B + 32}" text-anchor="middle" font-size="11" fill="${MUTED}">z (curve H₀ predicts)</text>`;
+    const lab = (x, y, t, col, anc) => `<text x="${x}" y="${y}" text-anchor="${anc}" font-size="12" font-weight="800" fill="${col}">${t}</text>`;
+    if (two) { g += lab(L, 16, `red: α/2 = ${fx(a / 2, 3)} each side`, REJ, 'start') + lab(L, 32, `blue: p/2 = ${fx(oneTail, 3)} each side`, PV, 'start');
+      g += lab(R, 16, `total red = α = ${a}`, REJ, 'end') + lab(R, 32, `total blue = p = ${fx(T.p, 3)}`, PV, 'end'); }
+    else { g += lab(L, 16, `red: all of α = ${a} in one tail`, REJ, 'start') + lab(L, 32, `blue: p = ${fx(T.p, 3)} (one tail)`, PV, 'start'); }
+    $('whyAsvg').innerHTML = g;
+  }
+  /* ---- B: why beyond z* ---- */
+  const altMu = god && !H0T ? MU : m, altLab = god && !H0T ? `if μ is really ${fx(MU)} (the truth)` : `if μ were at our x̄ = ${fx(m, 1)}`;
+  const cutLo = two || alt === 'less' ? mu0 - zc * se : -Infinity, cutHi = two || alt === 'greater' ? mu0 + zc * se : Infinity;
+  const inRej = mm => pnorm((cutLo - mm) / se) + (1 - pnorm((cutHi - mm) / se));
+  const pAlt = inRej(altMu);
+  $('whyB').innerHTML = [
+    `<b>If the claim is true, x̄ piles up near μ₀.</b> ${Math.round((1 - a) * 100)}% of interviews land within ${fx(zc, 2)} SEs of ${mu0s}${two ? ' on either side' : ''}. Landing beyond z* happens only ${Math.round(a * 100)}% of the time: rare, but possible (that’s the false alarm from question 1).`,
+    `<b>If the claim is wrong, x̄ piles up somewhere else</b>, around the real μ. Then far-out values of x̄ stop being rare. ${god && !H0T ? `With the true μ = ${fx(MU)}, <b>${fx(pAlt * 100, 0)}%</b> of interviews land in the rejection region (the gold area), versus ${Math.round(a * 100)}% if the claim were true.` : `The gold curve shows one such world: <b>${fx(pAlt * 100, 0)}%</b> of its interviews land in the rejection region, versus ${Math.round(a * 100)}% if the claim were true.`}`,
+    ...(pAlt < a && !two ? [`<b>Heads-up:</b> here the real μ sits on the <i>opposite</i> side from what Hₐ predicts, so its interviews almost never reach the ${alt === 'greater' ? 'high' : 'low'} tail (${fx(pAlt * 100, 0)}%). A one-sided test only looks for evidence in one direction; switch Hₐ to ≠ or flip it to see the gold area grow.`] : []),
+    `<b>So “far from μ₀” is the kind of result a wrong claim produces and a true claim rarely does.</b> That’s what makes it evidence. The middle can’t be the rejection region: an x̄ right next to ${mu0s} agrees with the claim.`,
+    `<b>Where exactly is the edge?</b> z* is placed so the red area is exactly α. Move it in and false alarms go up; move it out and you’d miss more wrong claims. ${two ? 'For ≠ the region sits in both tails, because a gap in either direction counts against the claim.' : `For a one-sided Hₐ the whole region sits on the ${alt === 'greater' ? 'high' : 'low'} side, because only that direction is evidence for Hₐ.`}`
+  ].map(t => `<li>${t}</li>`).join('');
+  {
+    const lo = Math.min(mu0, altMu) - 3.8 * se, hi = Math.max(mu0, altMu) + 3.8 * se, L = 12, R = 388, Tp = 64, B = 186;
+    const sx = v => L + (v - lo) / (hi - lo) * (R - L), sy = (v, c) => B - phi((v - c) / se) / phi(0) * (B - Tp);
+    const area = (p, q, c) => { p = Math.max(p, lo); q = Math.min(q, hi); if (q <= p) return ''; let d = `M${fx(sx(p), 1)},${B}`;
+      for (let i = 0; i <= 60; i++) { const v = p + (q - p) * i / 60; d += ` L${fx(sx(v), 1)},${fx(sy(v, c), 1)}`; } return d + ` L${fx(sx(q), 1)},${B} Z`; };
+    const line = c => { let d = ''; for (let i = 0; i <= 140; i++) { const v = lo + (hi - lo) * i / 140; d += (i ? ' L' : 'M') + fx(sx(v), 1) + ',' + fx(sy(v, c), 1); } return d; };
+    let g = '';
+    [[cutLo === -Infinity ? null : [-1e9, cutLo]], [cutHi === Infinity ? null : [cutHi, 1e9]]].forEach(([r]) => { if (!r) return;
+      g += `<path d="${area(r[0], r[1], altMu)}" fill="rgba(183,121,31,.35)"/>`; g += `<path d="${area(r[0], r[1], mu0)}" fill="rgba(192,57,43,.3)" stroke="${REJ}" stroke-width="1.5"/>`; });
+    g += `<path d="${line(mu0)}" fill="none" stroke="${INK}" stroke-width="2.2"/>`;
+    g += `<path d="${line(altMu)}" fill="none" stroke="${TRUTH}" stroke-width="2.2" stroke-dasharray="6 4"/>`;
+    g += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="${INK}" stroke-width="1.5"/>`;
+    [cutLo, cutHi].forEach(c => { if (Number.isFinite(c) && c > lo && c < hi) g += `<line x1="${sx(c)}" y1="${Tp - 8}" x2="${sx(c)}" y2="${B}" stroke="${REJ}" stroke-dasharray="4 3" stroke-width="1.5"/><text x="${sx(c)}" y="${B + 15}" text-anchor="middle" font-size="11" font-weight="700" fill="${REJ}">${fx(c, 1)}</text>`; });
+    g += `<text x="${sx(mu0)}" y="${B + 15}" text-anchor="middle" font-size="11" font-weight="700" fill="${RED}">μ₀</text>`;
+    g += `<text x="${L}" y="14" font-size="12" font-weight="800" fill="${INK}">solid: if the claim is true → ${Math.round(a * 100)}% in red</text>`;
+    g += `<text x="${L}" y="30" font-size="12" font-weight="800" fill="${TRUTH}">dashed: ${altLab} → ${fx(pAlt * 100, 0)}% in red zone</text>`;
+    g += `<text x="${R}" y="${B + 32}" text-anchor="end" font-size="11" fill="${MUTED}">where x̄ lands (cookies)</text>`;
+    $('whyBsvg').innerHTML = g;
+  }
+  /* ---- C: why outside the CI ---- */
+  const gap = Math.abs(m - mu0), yard = zc * se;
+  $('whyC').innerHTML = [
+    `<b>Distance works both ways.</b> “x̄ is within ${fx(zc, 2)} SEs of μ₀” and “μ₀ is within ${fx(zc, 2)} SEs of x̄” are the same sentence. The test draws the yardstick around μ₀ and asks if x̄ is inside; the CI draws the <i>same</i> yardstick around x̄ and asks if μ₀ is inside. Here the gap is ${fx(gap)} and the yardstick is ${fx(yard)}, so ${gap >= yard ? 'both say “outside”' : 'both say “inside”'}.`,
+    `<b>The CI is the list of claims our data can’t rule out.</b> Test every possible μ₀ with this one sample: the ones you fail to reject are exactly the values inside the CI (Step 5 part 1 draws this). So “μ₀ outside the CI” literally means “μ₀ is not on the list.”`,
+    `<b>Same false-alarm rate.</b> A ${Math.round((1 - a) * 100)}% CI built this way catches the true μ in ${Math.round((1 - a) * 100)}% of interviews. So if the claim were true, it would land outside our interval only ${Math.round(a * 100)}% of the time, which is α again.`,
+    two ? `<b>Match the levels:</b> α = ${a} two-sided ⇔ a ${Math.round((1 - a) * 100)}% CI.` : `<b>Match the levels:</b> a one-sided test at α = ${a} matches a one-sided ${Math.round((1 - a) * 100)}% bound, which is one end of a ${Math.round((1 - 2 * a) * 100)}% two-sided CI.`
+  ].map(t => `<li>${t}</li>`).join('');
+  {
+    const lo = Math.min(m, mu0) - yard * 1.25, hi = Math.max(m, mu0) + yard * 1.25, L = 16, R = 384, sx = v => L + (v - lo) / (hi - lo) * (R - L);
+    const col = T.rej ? REJ : KEEP;
+    const bar = (c, y, colr, lab, l2, r2) => { const a1 = Number.isFinite(l2) ? l2 : lo, b1 = Number.isFinite(r2) ? r2 : hi;
+      return `<line x1="${sx(Math.max(lo, a1))}" y1="${y}" x2="${sx(Math.min(hi, b1))}" y2="${y}" stroke="${colr}" stroke-width="10" stroke-opacity=".3" stroke-linecap="round"/>` +
+        `<text x="${L}" y="${y - 12}" font-size="12" font-weight="800" fill="${colr}" stroke="#fff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">${lab}</text>`; };
+    let g = '';
+    const tl = two || alt === 'less' ? mu0 - yard : -Infinity, th = two || alt === 'greater' ? mu0 + yard : Infinity;
+    g += `<line x1="${sx(mu0)}" y1="36" x2="${sx(mu0)}" y2="160" stroke="${RED}" stroke-width="3"/><text x="${sx(mu0)}" y="176" text-anchor="middle" font-size="12" font-weight="800" fill="${RED}">μ₀ = ${mu0s}</text>`;
+    g += `<line x1="${sx(m)}" y1="36" x2="${sx(m)}" y2="160" stroke="${INK}" stroke-width="3"/><text x="${sx(m)}" y="192" text-anchor="middle" font-size="12" font-weight="800" fill="${INK}">x̄ = ${fx(m, 2)}</text>`;
+    g += bar(mu0, 54, INK, `test: “ordinary” zone around μ₀ (±${fx(yard, 2)})`, tl, th);
+    g += bar(m, 120, KEEP, `CI: plausible μ’s around x̄ (same ±${fx(yard, 2)})`, T.lo, T.hi);
+    g += `<circle cx="${sx(m)}" cy="54" r="6" fill="${col}"/><circle cx="${sx(mu0)}" cy="120" r="6" fill="${col}"/>`;
+    g += `<line x1="${sx(Math.min(m, mu0))}" y1="94" x2="${sx(Math.max(m, mu0))}" y2="94" stroke="${col}" stroke-width="2"/><text x="${(sx(m) + sx(mu0)) / 2}" y="84" text-anchor="middle" font-size="11.5" font-weight="800" fill="${col}" stroke="#fff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">gap ${fx(gap, 2)}</text>`;
+    $('whyCsvg').innerHTML = g;
+  }
+}
+
+
+/* ---------- same distance, two viewpoints ---------- */
+const twin = { follow: true, d: 0, anim: null };
+function twinRegions(alt, zc, d) {      // in SE units, claim at 0, x̄ at d
+  const zone = alt === 'two' ? [-zc, zc] : alt === 'greater' ? [-Infinity, zc] : [-zc, Infinity];
+  const ci = alt === 'two' ? [d - zc, d + zc] : alt === 'greater' ? [d - zc, Infinity] : [-Infinity, d + zc];
+  return { zone, ci, inZone: d >= zone[0] && d <= zone[1], inCI: 0 >= ci[0] && 0 <= ci[1] };
+}
+function drawTwin() {
+  const { mu0, n, a, alt } = st, cd = draw(st.seed, n, st.smug), T = test(cd.m, cd.s, n, mu0, a, alt), zc = T.zc, se = T.se;
+  if (twin.follow) { twin.d = Math.max(-4.5, Math.min(4.5, T.z)); $('twinD').value = twin.d; }
+  const d = twin.d, R0 = twinRegions(alt, zc, d), mu0s = h0True() ? fx(MU) : String(+fx(mu0, 1));
+  $('twinDv').innerHTML = `${d >= 0 ? '+' : '−'}${fx(Math.abs(d))} SE <span class="mini">(${d >= 0 ? '+' : '−'}${fx(Math.abs(d * se), 1)} cookies)</span>`;
+  $('chipA').className = 'chip ' + (R0.inZone ? 'in' : 'out'); $('chipA').textContent = `Test: x̄ inside the claim’s zone? ${R0.inZone ? 'YES → not guilty' : 'NO → guilty'}`;
+  $('chipB').className = 'chip ' + (R0.inCI ? 'in' : 'out'); $('chipB').textContent = `CI: claim inside x̄’s interval? ${R0.inCI ? 'YES → not guilty' : 'NO → guilty'}`;
+  const L = 24, R = 736, A0 = -6.5, A1 = 6.5, sx = v => L + (Math.max(A0, Math.min(A1, v)) - A0) / (A1 - A0) * (R - L);
+  const band = (r, y, col, op) => `<rect x="${fx(sx(r[0]), 1)}" y="${y - 11}" width="${fx(sx(r[1]) - sx(r[0]), 1)}" height="22" rx="11" fill="${col}" fill-opacity="${op}" stroke="${col}" stroke-width="1.5"/>`;
+  let g = '';
+  for (let t = -6; t <= 6; t++) g += `<line x1="${sx(t)}" y1="34" x2="${sx(t)}" y2="196" stroke="#EFE7DA"/>`;
+  const y1 = 66, y2 = 158, colA = R0.inZone ? KEEP : REJ, colB = R0.inCI ? KEEP : REJ;
+  const zTxt = alt === 'two' ? `within ±${fx(zc, 2)} SE of the claim` : alt === 'greater' ? `anything up to +${fx(zc, 2)} SE above the claim` : `anything down to −${fx(zc, 2)} SE below the claim`;
+  const cTxt = alt === 'two' ? `x̄ ± the same ${fx(zc, 2)} SE` : alt === 'greater' ? `from x̄ − the same ${fx(zc, 2)} SE upward` : `up to x̄ + the same ${fx(zc, 2)} SE`;
+  g += band(R0.zone, y1, '#8C8378', .18);
+  g += band(R0.ci, y2, KEEP, .16);
+  g += `<line x1="${sx(0)}" y1="${y1 - 16}" x2="${sx(0)}" y2="${y2 + 16}" stroke="${RED}" stroke-width="3"/>`;
+  g += `<circle cx="${sx(d)}" cy="${y1}" r="8" fill="${colA}" stroke="#fff" stroke-width="2"/><circle cx="${sx(0)}" cy="${y2}" r="8" fill="${colB}" stroke="#fff" stroke-width="2"/>`;
+  g += `<line x1="${sx(d)}" y1="${y1}" x2="${sx(d)}" y2="${y2}" stroke="${INK}" stroke-width="2.5" stroke-dasharray="5 4"/>`;
+  const ym = (y1 + y2) / 2, xa = sx(Math.min(0, d)), xb = sx(Math.max(0, d));
+  if (Math.abs(d) > 0.08) g += `<line x1="${xa}" y1="${ym}" x2="${xb}" y2="${ym}" stroke="${INK}" stroke-width="2"/><path d="M${xa + 7} ${ym - 5} L${xa} ${ym} L${xa + 7} ${ym + 5} M${xb - 7} ${ym - 5} L${xb} ${ym} L${xb - 7} ${ym + 5}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+  g += `<text x="${(xa + xb) / 2}" y="${ym - 7}" text-anchor="middle" font-size="12.5" font-weight="800" fill="${INK}" stroke="#FFFDF7" stroke-width="4" paint-order="stroke">same gap: ${fx(Math.abs(d))} SE</text>`;
+  g += `<text x="${sx(0)}" y="${y2 + 32}" text-anchor="middle" font-size="12" font-weight="800" fill="${RED}">claim μ₀</text>`;
+  g += `<text x="${sx(d) + (d > 4 ? -13 : 13)}" y="${y1 + 4}" text-anchor="${d > 4 ? 'end' : 'start'}" font-size="13" font-weight="900" fill="${INK}" stroke="#FFFDF7" stroke-width="4" paint-order="stroke">x̄</text>`;
+  const halo = 'stroke="#FFFDF7" stroke-width="5" stroke-linejoin="round" paint-order="stroke"';
+  g += `<text x="${L}" y="${y1 - 22}" font-size="13" font-weight="800" fill="${INK}" ${halo}>Test (stand at the claim): the claim’s “ordinary” zone, ${zTxt}</text>`;
+  g += `<text x="${L}" y="${y2 - 22}" font-size="13" font-weight="800" fill="${INK}" ${halo}>CI (stand at the evidence): x̄’s interval, ${cTxt}</text>`;
+  g += `<line x1="${L}" y1="214" x2="${R}" y2="214" stroke="${INK}" stroke-width="1.5"/>`;
+  for (let t = -6; t <= 6; t += 2) g += `<text x="${sx(t)}" y="230" text-anchor="middle" font-size="11.5" fill="${MUTED}">${t === 0 ? '0' : (t > 0 ? '+' : '−') + Math.abs(t)} SE</text><text x="${sx(t)}" y="245" text-anchor="middle" font-size="10.5" fill="${MUTED}">${fx(mu0 + t * se, 1)}</text>`;
+  $('twinSvg').innerHTML = g;
+  /* coverage picture (honest-manager world: z values of each group, measured from the true claim) */
+  const Z = h0World(n), rows = Z.slice(0, 50), miss = z => !twinRegions(alt, zc, z).inCI;
+  const Lc = 24, Rc = 736, sxc = v => Lc + (Math.max(A0, Math.min(A1, v)) - A0) / (A1 - A0) * (Rc - Lc), top = 30, rh = 7.4;
+  let c = '';
+  const zone = twinRegions(alt, zc, 0).zone;
+  c += `<rect x="${sxc(zone[0])}" y="${top - 6}" width="${sxc(zone[1]) - sxc(zone[0])}" height="${rows.length * rh + 12}" fill="#8C8378" fill-opacity=".14"/>`;
+  c += `<text x="${(sxc(Math.max(zone[0], A0)) + sxc(Math.min(zone[1], A1))) / 2}" y="16" text-anchor="middle" font-size="12" font-weight="800" fill="${MUTED}">the claim’s ordinary zone</text>`;
+  rows.forEach((z, i) => { const r = twinRegions(alt, zc, z), y = top + i * rh, col = miss(z) ? REJ : KEEP;
+    c += `<line x1="${fx(sxc(r.ci[0]), 1)}" y1="${fx(y, 1)}" x2="${fx(sxc(r.ci[1]), 1)}" y2="${fx(y, 1)}" stroke="${col}" stroke-width="${miss(z) ? 3 : 2}" stroke-opacity="${miss(z) ? 1 : .55}" stroke-linecap="round"/>`;
+    c += `<circle cx="${fx(sxc(z), 1)}" cy="${fx(y, 1)}" r="2.8" fill="${miss(z) ? REJ : INK}"/>`; });
+  const yb = top + rows.length * rh + 10;
+  c += `<line x1="${sxc(0)}" y1="${top - 10}" x2="${sxc(0)}" y2="${yb}" stroke="${RED}" stroke-width="2.5"/>`;
+  c += `<line x1="${Lc}" y1="${yb + 4}" x2="${Rc}" y2="${yb + 4}" stroke="${INK}" stroke-width="1.5"/>`;
+  for (let t = -6; t <= 6; t += 2) c += `<text x="${sxc(t)}" y="${yb + 19}" text-anchor="middle" font-size="11.5" fill="${MUTED}">${t === 0 ? 'true claim' : (t > 0 ? '+' : '−') + Math.abs(t) + ' SE'}</text>`;
+  $('covSvg').setAttribute('viewBox', `0 0 760 ${Math.ceil(yb + 28)}`);
+  $('covSvg').innerHTML = c;
+  const k = rows.filter(miss).length, K = Z.filter(miss).length, lvl = Math.round((1 - a) * 100);
+  $('covTxt').innerHTML = `<b>${k} of these 50</b> intervals missed the true claim (red), and they are exactly the ${k} groups whose average landed outside the zone. Over all 1,000 groups, <b>${fx(K / 10, 1)}%</b> missed (≈ α = ${fx(a * 100, 0)}%), so about <b>${fx(100 - K / 10, 1)}%</b> covered the truth. ` +
+    `That’s the same number seen twice: “an honest manager gets convicted ${fx(a * 100, 0)}% of the time” and “${lvl}% of intervals catch the true value.” ${n < 30 ? `With n = ${n} and skewed cookie counts, the real rate can drift from α: the CLT needs a bigger n.` : ''}`;
+  $('covPro').innerHTML = alt === 'two'
+    ? `“We are ${lvl}% confident that μ is between L and U” means: in repeated sampling, about ${lvl}% of intervals built as x̄ ± z*·SE contain μ. A two-sided test at level α rejects H₀: μ = μ₀ exactly when μ₀ lies outside the ${lvl}% CI, because |x̄ − μ₀| ≥ z*·SE is the same inequality either way. (This duality is exact here because both use SE = s/√n. For a proportion, the test’s SE uses p₀ and the CI’s uses p̂, so they can disagree right at the boundary.)`
+    : `A one-sided test at level α matches the one-sided ${lvl}% confidence bound (one end of a ${Math.round((1 - 2 * a) * 100)}% two-sided CI). It rejects H₀ exactly when μ₀ falls on the Hₐ side beyond that bound. (Exact here because both use SE = s/√n.)`;
+}
+$('twinD').oninput = () => { twin.follow = false; twin.d = +$('twinD').value; if (twin.anim) { cancelAnimationFrame(twin.anim); twin.anim = null; $('twinPlay').textContent = '▶ Sweep'; } drawTwin(); };
+$('twinBack').onclick = () => { twin.follow = true; drawTwin(); };
+$('twinPlay').onclick = () => {
+  if (twin.anim) { cancelAnimationFrame(twin.anim); twin.anim = null; $('twinPlay').textContent = '▶ Sweep'; return; }
+  twin.follow = false; const t0 = performance.now(), dur = 6000; $('twinPlay').textContent = '❚❚ Pause';
+  const step = t => { const u = Math.min(1, (t - t0) / dur); twin.d = -4.5 + 9 * u; $('twinD').value = twin.d; drawTwin();
+    if (u < 1) twin.anim = requestAnimationFrame(step); else { twin.anim = null; $('twinPlay').textContent = '▶ Sweep'; } };
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { twin.d = 2.5; $('twinD').value = 2.5; drawTwin(); $('twinPlay').textContent = '▶ Sweep'; return; }
+  twin.anim = requestAnimationFrame(step);
+};
+
+
+function drawRecap(m, se, n, mu0, mu0s, a, alt, T) {
+  const zc2 = qnorm(1 - a / 2), lo = m - zc2 * se, hi = m + zc2 * se, lvl = Math.round((1 - a) * 100);
+  $('recEst').innerHTML = `n = ${n}, x̄ = ${fx(m)}, SE = ${fx(se)}<br>point estimate: μ ≈ <b>${fx(m)}</b><br>${lvl}% CI: <b>(${fx(lo)}, ${fx(hi)})</b>`;
+  $('recTest').innerHTML = `claim: μ₀ = ${mu0s}<br>z = (${fx(m)} − ${mu0s}) / ${fx(se)} = <b>${fx(T.z)}</b><br>p-value = <b>${fp(T.p)}</b> → <b>${T.rej ? 'guilty (reject H₀)' : 'not guilty (fail to reject H₀)'}</b>`;
+  const inside = mu0 >= lo && mu0 <= hi;
+  $('recLink').innerHTML = `<b>The two jobs are linked.</b> Crumble’s ${mu0s} is ${inside ? '<b>inside</b>' : '<b>outside</b>'} last time’s ${lvl}% CI (${fx(lo, 1)} to ${fx(hi, 1)}), so the estimate already hinted at the verdict: ${inside ? 'his number is one of the believable values, so the trial can’t throw it out' : 'his number is not among the believable values, so the trial throws it out'}.` +
+    (alt === 'two' ? '' : ` (Here Hₐ is one-sided, so the matching interval is a one-sided bound; Step 3 handles that case.)`);
+}
+
+function drawRuler(m, s, n, a, alt, mu0, T, god) {
+  const L = 30, R = 870, A = 25, Bv = 75, sx = v => L + (v - A) / (Bv - A) * (R - L), y = 60, h = 34;
+  let svg = '', kept = 0;
+  for (let v = A; v <= Bv + 1e-9; v += 0.25) { const r = test(m, s, n, v, a, alt).rej; if (!r) kept++;
+    svg += `<rect x="${fx(sx(v) - 3.2, 1)}" y="${y}" width="6" height="${h}" rx="1.5" fill="${r ? REJ : KEEP}" fill-opacity="${r ? .55 : .8}"/>`; }
+  for (let t = 25; t <= 75; t += 5) svg += `<text x="${sx(t)}" y="${y + h + 18}" text-anchor="middle" font-size="12" fill="${MUTED}">${t}</text>`;
+  svg += `<text x="${R}" y="${y + h + 34}" text-anchor="end" font-size="11.5" fill="${MUTED}">claimed μ₀ (cookies)</text>`;
+  const mk = (v, col, lab, up, dash) => { if (v < A || v > Bv) return ''; const X = sx(v);
+    return `<line x1="${X}" y1="${up ? y - 22 : y}" x2="${X}" y2="${up ? y + h : y + h + 22}" stroke="${col}" stroke-width="3" ${dash ? 'stroke-dasharray="3 3"' : ''}/>` +
+      `<text x="${X}" y="${up ? y - 27 : y + h + 34}" text-anchor="middle" font-size="12.5" font-weight="800" fill="${col}">${lab}</text>`; };
+  svg += mk(m, INK, `our x̄ = ${fx(m)}`, true);
+  svg += mk(mu0, RED, `claim ${h0True() ? fx(MU) : mu0}`, false);
+  if (god) svg += `<text x="${sx(MU)}" y="14" text-anchor="middle" font-size="12.5" font-weight="800" fill="${TRUTH}">true μ = ${fx(MU)}</text><line x1="${sx(MU)}" y1="18" x2="${sx(MU)}" y2="${y + h}" stroke="${TRUTH}" stroke-width="2.5" stroke-dasharray="2 3"/>`;
+  $('ruler').innerHTML = svg;
+  const lo = Math.max(A, T.lo), hi = Math.min(Bv, T.hi);
+  const range = alt === 'two' ? `from about <b>${fx(T.lo, 1)}</b> to <b>${fx(T.hi, 1)}</b>` : alt === 'greater' ? `from about <b>${fx(T.lo, 1)}</b> upward` : `up to about <b>${fx(T.hi, 1)}</b>`;
+  $('rulerTxt').innerHTML = `With this one interview we would fail to reject <b>every claim ${range}</b>: that green band is exactly the ${alt === 'two' ? Math.round((1 - a) * 100) + '% confidence interval' : 'one-sided confidence bound'}. ` +
+    `If “fail to reject” meant “accept,” we would be accepting that the average is 40 <i>and</i> 42 <i>and</i> 45 at the same time. They can’t all be true. ` +
+    (god ? `<span style="color:${TRUTH};font-weight:700">Only one number is the truth (${fx(MU)}), and our sample can’t single it out.</span> ` : '') +
+    `So “fail to reject” only means <b>“μ₀ is still on the list of suspects.”</b>`;
+}
+
+function drawSim(n, mu0, a, alt, god, H0T, mu0s) {
+  const R = sims(n), res = R.map(r => test(r.m, r.s, n, mu0, a, alt).rej), nr = res.filter(Boolean).length, nk = SIM_R - nr;
+  const mine = st.seed >= 100000 && st.seed < 100000 + SIM_R ? st.seed - 100000 : -1;
+  $('dots').innerHTML = res.map((r, i) => `<i class="${r ? 'r' : 'k'}${i === mine ? ' me' : ''}" title="interview ${i + 1}: ${r ? 'reject' : 'fail to reject'}"></i>`).join('');
+  const se = SIG / Math.sqrt(n), d = (MU - mu0) / se, zc = crit(a, alt);
+  const power = alt === 'two' ? (1 - pnorm(zc - d)) + pnorm(-zc - d) : alt === 'greater' ? 1 - pnorm(zc - d) : pnorm(-zc - d);
+  const cell = (cls, title, cnt, sub) => `<td class="${cls}"><b>${title}</b><span class="cnt">${cnt}</span><div class="mini">${sub}</div></td>`;
+  const cd = draw(st.seed, n, st.smug), T = test(cd.m, cd.s, n, mu0, a, alt);
+  const dimT = god && !H0T ? ' dim' : '', dimF = god && H0T ? ' dim' : '';
+  const meT = god && H0T, meF = god && !H0T;
+  $('matrix').innerHTML = `<tr><th></th><th>Reject H₀<br><span class="mini">guilty</span></th><th>Fail to reject H₀<br><span class="mini">not guilty</span></th></tr>
+    <tr><th class="rowh">Crumble honest<br><span class="mini">(H₀ true: claim = ${fx(MU)})</span></th>
+      ${cell('bad' + dimT + (meT && T.rej ? ' me' : ''), 'Type I error', H0T ? nr : '—', 'an honest man convicted; rate ≈ α')}
+      ${cell('good' + dimT + (meT && !T.rej ? ' me' : ''), 'Correct', H0T ? nk : '—', 'not guilty, but still not “proven honest”')}</tr>
+    <tr><th class="rowh">Crumble lying<br><span class="mini">(H₀ false: claim ≠ ${fx(MU)})</span></th>
+      ${cell('good' + dimF + (meF && T.rej ? ' me' : ''), 'Correct', H0T ? '—' : nr, 'caught the liar (power)')}
+      ${cell('bad' + dimF + (meF && !T.rej ? ' me' : ''), 'Type II error', H0T ? '—' : nk, 'a liar walks free')}</tr>`;
+  if (!god) {
+    $('simTxt').innerHTML = `${nr} of 200 courts said guilty and ${nk} said not guilty. <b>Without the security tape we cannot tell which verdicts were right.</b> Turn the tape back on to grade them.`;
+    $('matrix').querySelectorAll('td').forEach(td => { td.classList.add('dim'); td.querySelector('.cnt').textContent = '?'; });
+    return;
+  }
+  $('simTxt').innerHTML = H0T
+    ? `Crumble is <b>honest</b> this time. Still, ${nr} of 200 courts (${fx(nr / 2, 1)}%) convicted him: those are <b>Type I errors</b>, and their rate stays near α = ${a * 100}% no matter what n is. That’s the price of the “guilty” bar we chose. The other ${nk} said not guilty, correctly, but even they can’t declare him proven honest: part 1 showed their evidence fits many nearby claims too.`
+    : `Crumble is <b>lying</b> (he says ${mu0s}; the tape says ${fx(MU)}). Only ${nr} of 200 courts (${fx(nr / 2, 1)}%) caught him; theory says the power is about ${fx(power * 100, 0)}%. ` +
+      (nk > 0 ? `In the other <b>${nk} courts a liar walked free</b> (Type II errors). If those judges had announced “Crumble is proven honest: Terps eat ${mu0s} cookies,” all ${nk} would have announced something false. ` : '') +
+      (power < 0.8 ? `Try a bigger n: more witnesses shrink the SE, and more courts catch him.` : `With this many witnesses, most courts catch him. Try n = 25 or a smaller fib to watch liars slip through.`);
+}
+
+/* collapsible steps */
+document.querySelectorAll('main > section.card').forEach((card, i) => {
+  const h2 = card.querySelector(':scope > h2'); if (!h2) return;
+  const body = document.createElement('div'); body.className = 'cbody'; body.id = 'cbody' + i;
+  let x = h2.nextSibling; while (x) { const nx = x.nextSibling; body.appendChild(x); x = nx; }
+  card.appendChild(body);
+  const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'ctog'; btn.setAttribute('aria-controls', body.id); card.prepend(btn);
+  const set = open => { card.classList.toggle('closed', !open); btn.setAttribute('aria-expanded', String(open)); btn.textContent = open ? 'Close ▲' : 'Open ▼'; };
+  btn.onclick = () => set(card.classList.contains('closed'));
+  [card.querySelector(':scope > .step'), h2].forEach(e => e && e.addEventListener('click', () => { if (card.classList.contains('closed')) set(true); }));
+  set(true);
+});
+render();
+})();
+</script>
+</body>
+</html>

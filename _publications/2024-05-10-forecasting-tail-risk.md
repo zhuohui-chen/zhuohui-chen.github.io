@@ -7,6 +7,9 @@ date: 2024-05-10
 authors: 'Yuji Sakurai, <b>Zhuohui Chen</b>'
 venue: 'IMF Working Paper WP/24/99'
 excerpt: 'CoFiE-NN combines an LSTM with Cornish–Fisher expansions to forecast Value-at-Risk. It captures nonlinear dynamics in higher moments while keeping the output interpretable, and outperforms EGARCH-t and Extreme Value Theory models on simulated data and on 22 currencies.'
+featured_link:
+  name: 'IMF page'
+  url: 'https://www.imf.org/en/Publications/WP/Issues/2024/05/10/Forecasting-Tail-Risk-via-Neural-Networks-with-Asymptotic-Expansions-548841'
 links:
   - name: 'IMF page'
     url: 'https://www.imf.org/en/Publications/WP/Issues/2024/05/10/Forecasting-Tail-Risk-via-Neural-Networks-with-Asymptotic-Expansions-548841'

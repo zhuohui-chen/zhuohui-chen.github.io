@@ -7,6 +7,9 @@ date: 2024-10-01
 authors: '<b>Zhuohui Chen</b>, Nikolaos Kourentzes, Romain Lafarguette, Anastasios Panagiotelis, Romain Veyrune'
 venue: 'IMF Monetary and Capital Markets Department Technical Assistance Handbook'
 excerpt: 'A practitioner guide to the statistical side of central bank liquidity forecasting: forecasting autonomous factors (currency in circulation, net foreign assets, government balances) and liquidity demand with ETS and ARIMA models, forecast combination, reconciliation, and forecast evaluation.'
+featured_link:
+  name: 'Handbook'
+  url: 'https://www.imf.org/en/publications/miscellaneous-publications/issues/2022/01/18/monetary-and-capital-markets-department-technical-assistance-handbook'
 links:
   - name: 'PDF'
     url: 'https://www.imf.org/-/media/files/publications/miscellaneous/english/2022/mcm-technical-assistance-handbook/liquidity-forecasting-part-ii.pdf'
