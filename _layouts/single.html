@@ -36,6 +36,13 @@ layout: default
         
         {% if page.collection == 'teaching' %}
           <p> {{ page.type }}, <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
+        {% elsif page.collection == 'publications' %}
+          <div class="pub pub--header">
+            {% if page.authors %}<div class="pub__authors">{{ page.authors }}</div>{% endif %}
+            <div class="pub__venue"><i>{{ page.venue }}</i>, {% if page.year_label %}{{ page.year_label }}{% else %}{{ page.date | date: "%B %Y" }}{% endif %}</div>
+            {% if page.note %}<div class="pub__note">{{ page.note }}</div>{% endif %}
+            {% if page.links %}<div class="pub__links">{% for l in page.links %}<a class="pill" href="{{ l.url }}">{{ l.name }}</a>{% endfor %}</div>{% endif %}
+          </div>
         {% elsif page.venue and page.date %}
           <p>Published in <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
         {% elsif page.date %}

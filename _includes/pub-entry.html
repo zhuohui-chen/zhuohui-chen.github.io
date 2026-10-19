@@ -1,0 +1,17 @@
+{% comment %}
+  One publication in a compact academic format.
+  Front matter used: title, authors, venue, date, year_label, note, excerpt, links (name/url list).
+{% endcomment %}
+{% include base_path %}
+<div class="pub">
+  <div class="pub__title"><a href="{{ base_path }}{{ post.url }}">{{ post.title }}</a></div>
+  {% if post.authors %}<div class="pub__authors">{{ post.authors }}</div>{% endif %}
+  <div class="pub__venue"><i>{{ post.venue }}</i>, {% if post.year_label %}{{ post.year_label }}{% else %}{{ post.date | date: "%Y" }}{% endif %}</div>
+  {% if post.note %}<div class="pub__note">{{ post.note }}</div>{% endif %}
+  {% if include.excerpt and post.excerpt %}<div class="pub__excerpt">{{ post.excerpt | markdownify | remove: '<p>' | remove: '</p>' }}</div>{% endif %}
+  {% if post.links %}
+  <div class="pub__links">
+    {% for l in post.links %}<a class="pill" href="{{ l.url }}">{{ l.name }}</a>{% endfor %}
+  </div>
+  {% endif %}
+</div>

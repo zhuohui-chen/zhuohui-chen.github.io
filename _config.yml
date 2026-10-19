@@ -12,7 +12,7 @@ site_theme               : "air" # The available themes options are "default", "
 title                    : "Zhuohui Jerry Chen"
 title_separator          : "-"
 name                     : &name "Zhuohui Jerry Chen"
-description              : &description "Zhuohui's personal website"   # Update this with a general description of your site, this is the default if not overridden by a page
+description              : &description "Zhuohui (Jerry) Chen: Ph.D. student in Information Science at the University of Maryland, working on trustworthy LLMs, LLM agents, and forecasting."   # Update this with a general description of your site, this is the default if not overridden by a page
 url                      : https://zhuohui-chen.github.io # The base hostname & protocol for your site e.g. "https://[your GitHub username].github.io",
                                                            # or if you already have some other page hosted on Github then use "https://[your GitHub username].github.io/[Your Repo Name]"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
@@ -26,9 +26,9 @@ author:
   avatar           : "zhuohui_photo.jpg"
   name             : "Zhuohui Jerry Chen"
   pronouns         : "he/him"  
-  bio              : "PhD Student in Info Sci"
+  bio              : "Ph.D. student in Information Science. Trustworthy LLMs, agents & forecasting. Formerly IMF."
   location         : "College Park, MD, USA"
-  employer         : "University of Maryland, College Park"
+  employer         : "University of Maryland"
   uri              : # URL
   email            : "zchen95@umd.edu" 
 
@@ -84,12 +84,12 @@ author:
 
 # Publication Category - The following the list of publication categories and their headings
 publication_category:
-  books:
-    title: 'Books'
-  manuscripts:
-    title: 'Journal Articles'    
-  conferences:
-    title: 'Conference Papers'
+  papers:
+    title: 'Working Papers'
+  handbooks:
+    title: 'Technical Handbooks and Assistance Reports'
+  reports:
+    title: 'Contributions to IMF Country Reports'
 
 # Site Settings
 teaser                   :  # filename of teaser fallback teaser image placed in /images/ for social media previews

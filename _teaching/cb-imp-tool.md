@@ -30,7 +30,7 @@ The course covers topics:
 - Stress testing central bank's equity and evaluating solutions to enhance financial soundness of central bank's balance sheet (e.g., recapitalization)
 - Satellite models for forecasting key balance sheet items
 
-Past course adverstisments can be found at:
+Past course announcements:
 
 [The IMF Singapore Regional Training Institute](https://www.imfsti.org/content/STI/Home/schedule-of-courses-and-seminars/2024-schedule-of-sti-training/In-Person-Tools-for-Central-Banking-Implementation-FX-Intervention-Liquidity-Forecasting-and-Central-Bank-Balance-Stress-Testing-CB.html)
 
