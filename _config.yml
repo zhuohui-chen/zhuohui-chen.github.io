@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "en-US"
 site_theme               : "air" # The available themes options are "default", "air", "sunrise", "mint", "dirt" and "contrast"
-title                    : "Zhuohui Jerry Chen"
+title                    : "Zhuohui (Jerry) Chen"
 title_separator          : "-"
 name                     : &name "Zhuohui Jerry Chen"
 description              : &description "Zhuohui (Jerry) Chen: Ph.D. student in Information Science at the University of Maryland, working on trustworthy LLMs, LLM agents, and forecasting."   # Update this with a general description of your site, this is the default if not overridden by a page
@@ -143,14 +143,17 @@ facebook:
   username               :
   app_id                 :
   publisher              :
-og_image                 :  # Social media default site image
+og_image                 : "zhuohui_photo.jpg"  # Social media default site image
 og_description           :  # Social media default site image description
 # For specifying social profiles
 # - https://developers.google.com/structured-data/customize/social-profiles
 social:
-  type                   : # Person or Organization (defaults to Person)
-  name                   : # If the user or organization name differs from the site's name
-  links: # An array of links to social media profiles
+  type                   : Person
+  name                   : "Zhuohui (Jerry) Chen"
+  links: # Profiles that belong to the same person (schema.org sameAs)
+    - "https://github.com/zhuohui-chen"
+    - "https://scholar.google.com/citations?user=QhFp7h4AAAAJ"
+    - "https://orcid.org/0009-0005-3113-3804"
 
 
 # Analytics
@@ -237,6 +240,15 @@ collections:
 
 # These settings control how pages and collections are included in the site
 defaults:
+  # Keep empty template pages and helper files out of the sitemap
+  - scope:
+      path: "googleeda08570c188e881.html"
+    values:
+      sitemap: false
+  - scope:
+      path: "talkmap"
+    values:
+      sitemap: false
   # _posts
   - scope:
       path: ""

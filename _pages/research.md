@@ -1,4 +1,5 @@
 ---
+description: "Research by Zhuohui (Jerry) Chen on LLMs for judgmental forecasting, prompt-injection defenses for LLM agents, LLMs as annotators, and earlier IMF work on tail-risk, reserve-demand and liquidity forecasting."
 layout: single
 title: "Research"
 permalink: /research/

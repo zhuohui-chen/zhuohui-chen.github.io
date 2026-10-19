@@ -1,4 +1,5 @@
 ---
+description: "CV of Zhuohui (Jerry) Chen, Ph.D. student in Information Science at the University of Maryland and former IMF Research Analyst."
 layout: archive
 title: "CV"
 permalink: /cv/

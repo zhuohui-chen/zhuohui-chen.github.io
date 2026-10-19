@@ -1,6 +1,7 @@
 ---
 permalink: /
 title: "Hihaody 👋"
+seo_title: "Zhuohui (Jerry) Chen - Ph.D. Student, University of Maryland"
 author_profile: true
 redirect_from:
   - /about/
